@@ -6,9 +6,10 @@ import { getDynamicGridClass } from '@/lib/utils';
 
 interface PublicationsSectionProps {
   publications: PortfolioData['publications'];
+  sectionTitle?: string;
 }
 
-const PublicationsSection: React.FC<PublicationsSectionProps> = ({ publications }) => {
+const PublicationsSection: React.FC<PublicationsSectionProps> = ({ publications, sectionTitle }) => {
   if (!publications || publications.length === 0) return null;
 
   return (
@@ -18,7 +19,7 @@ const PublicationsSection: React.FC<PublicationsSectionProps> = ({ publications 
           <div className="flex items-center gap-4 mb-16">
             <div className="h-px bg-gray-700 flex-1" />
             <h2 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500">
-              Publications
+              {sectionTitle || "Publications"}
             </h2>
             <div className="h-px bg-gray-700 flex-1" />
           </div>

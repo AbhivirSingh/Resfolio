@@ -4,7 +4,7 @@ import { RevealOnScroll } from '@/components/ui/reveal-on-scroll';
 import { BookOpen } from 'lucide-react';
 import { CourseworkSectionProps } from '@/types/portfolio';
 
-const CourseworkSection: React.FC<CourseworkSectionProps> = ({ coursework }) => {
+const CourseworkSection: React.FC<CourseworkSectionProps & { sectionTitle?: string }> = ({ coursework, sectionTitle }) => {
   if (!coursework || coursework.length === 0) return null;
 
   return (
@@ -14,7 +14,7 @@ const CourseworkSection: React.FC<CourseworkSectionProps> = ({ coursework }) => 
           <div className="flex items-center gap-4 mb-16">
             <div className="h-px bg-gray-700 flex-1" />
             <h2 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-neon-blue to-gray-200">
-              Relevant Coursework
+              {sectionTitle || "Relevant Coursework"}
             </h2>
             <div className="h-px bg-gray-700 flex-1" />
           </div>

@@ -5,7 +5,7 @@ import { Zap, Heart, Users } from 'lucide-react';
 import { getDynamicGridClass } from '@/lib/utils';
 import { ExtracurricularSectionProps } from '@/types/portfolio';
 
-const ExtracurricularSection: React.FC<ExtracurricularSectionProps> = ({ extracurricular }) => {
+const ExtracurricularSection: React.FC<ExtracurricularSectionProps & { sectionTitle?: string }> = ({ extracurricular, sectionTitle }) => {
   if (!extracurricular || extracurricular.length === 0) return null;
 
   return (
@@ -15,7 +15,7 @@ const ExtracurricularSection: React.FC<ExtracurricularSectionProps> = ({ extracu
           <div className="flex items-center gap-4 mb-16">
             <div className="h-px bg-gray-700 flex-1" />
             <h2 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-500">
-              Extracurricular
+              {sectionTitle || "Extracurricular"}
             </h2>
             <div className="h-px bg-gray-700 flex-1" />
           </div>

@@ -7,6 +7,7 @@ export interface PortfolioData {
         phone: string;
         location: string;
         image?: string;
+        resume?: string;
     };
     socialProfiles?: {
         github?: string;
@@ -81,6 +82,18 @@ export interface PortfolioData {
         title: string;
         items: string[];
     }[];
+    sectionTitles?: {
+        skills?: string;
+        experience?: string;
+        projects?: string;
+        education?: string;
+        certifications?: string;
+        publications?: string;
+        extracurricular?: string;
+        achievements?: string;
+        coursework?: string;
+    };
+    sectionOrder?: string[];
     theme?: "minimalist" | "creative" | "professional" | "modern";
 }
 

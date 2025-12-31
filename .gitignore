@@ -1,18 +1,77 @@
 # Dependencies
 node_modules/
+.pnp
+.pnp.js
 
 # Next.js
 .next/
 out/
+build/
+dist/
 
-# Environment
+# Production
+/build
+
+# Environment Variables
 .env
 .env.local
-.env.*.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env*.local
 
 # TypeScript
 *.tsbuildinfo
 next-env.d.ts
 
+# Testing
+coverage/
+.nyc_output
+
 # Logs
+logs
+*.log
 npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# OS Files
+.DS_Store
+*.pem
+Thumbs.db
+Desktop.ini
+
+# IDEs and Editors
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# Temporary Files
+*.tmp
+*.temp
+.cache/
+
+# Vercel
+.vercel
+
+# Debug
+debug/
+.eslintcache
+
+# MongoDB
+*.mongodb
+
+# PDF Files (uploaded resumes)
+# Uncomment if you want to ignore uploaded PDFs
+# public/uploads/
+# *.pdf

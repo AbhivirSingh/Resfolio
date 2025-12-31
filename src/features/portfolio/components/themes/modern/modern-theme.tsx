@@ -44,58 +44,58 @@ export function ModernTheme({ data }: { data: PortfolioData }) {
             <Navbar data={data} />
 
             <main className="relative">
-                {/* Hero */}
-                <Hero personalInfo={data.personalInfo} socialProfiles={data.socialProfiles} />
-
-                {/* Experience */}
-                {data.experience && data.experience.length > 0 && (
-                    <ExperienceSection experience={data.experience} />
-                )}
-
-                {/* Skills */}
-                {data.skills && data.skills.length > 0 && (
-                    <SkillsSection skills={data.skills} />
-                )}
-
-                {/* Projects */}
-                {data.projects && data.projects.length > 0 && (
-                    <ProjectsSection projects={data.projects} />
-                )}
-
-                {/* Publications */}
-                {data.publications && data.publications.length > 0 && (
-                    <PublicationsSection publications={data.publications} />
-                )}
-
-                {/* Achievements */}
-                {data.achievements && data.achievements.length > 0 && (
-                    <Achievements achievements={data.achievements} />
-                )}
-
-                {/* Certifications */}
-                {data.certifications && data.certifications.length > 0 && (
-                    <CertificationsSection certifications={data.certifications} />
-                )}
-
-                {/* Education */}
-                {data.education && data.education.length > 0 && (
-                    <EducationSection education={data.education} />
-                )}
-
-                {/* Coursework */}
-                {data.coursework && data.coursework.length > 0 && (
-                    <CourseworkSection coursework={data.coursework} />
-                )}
-
-                {/* Extracurricular */}
-                {data.extracurricular && data.extracurricular.length > 0 && (
-                    <ExtracurricularSection extracurricular={data.extracurricular} />
-                )}
-
-                {/* Custom Sections (Generic) */}
-                {data.customSections && data.customSections.length > 0 && (
-                    <CustomSections data={data.customSections} />
-                )}
+                {(data.sectionOrder || [
+                    'hero', 'experience', 'skills', 'projects', 'publications',
+                    'achievements', 'certifications', 'education', 'coursework',
+                    'extracurricular', 'customSections'
+                ]).map((sectionName) => {
+                    switch (sectionName) {
+                        case 'hero':
+                            return <Hero key="hero" personalInfo={data.personalInfo} socialProfiles={data.socialProfiles} />;
+                        case 'experience':
+                            return data.experience && data.experience.length > 0 && (
+                                <ExperienceSection key="experience" experience={data.experience} sectionTitle={data.sectionTitles?.experience} />
+                            );
+                        case 'skills':
+                            return data.skills && data.skills.length > 0 && (
+                                <SkillsSection key="skills" skills={data.skills} sectionTitle={data.sectionTitles?.skills} />
+                            );
+                        case 'projects':
+                            return data.projects && data.projects.length > 0 && (
+                                <ProjectsSection key="projects" projects={data.projects} sectionTitle={data.sectionTitles?.projects} />
+                            );
+                        case 'publications':
+                            return data.publications && data.publications.length > 0 && (
+                                <PublicationsSection key="publications" publications={data.publications} sectionTitle={data.sectionTitles?.publications} />
+                            );
+                        case 'achievements':
+                            return data.achievements && data.achievements.length > 0 && (
+                                <Achievements key="achievements" achievements={data.achievements} sectionTitle={data.sectionTitles?.achievements} />
+                            );
+                        case 'certifications':
+                            return data.certifications && data.certifications.length > 0 && (
+                                <CertificationsSection key="certifications" certifications={data.certifications} sectionTitle={data.sectionTitles?.certifications} />
+                            );
+                        case 'education':
+                            return data.education && data.education.length > 0 && (
+                                <EducationSection key="education" education={data.education} sectionTitle={data.sectionTitles?.education} />
+                            );
+                        case 'coursework':
+                            return data.coursework && data.coursework.length > 0 && (
+                                <CourseworkSection key="coursework" coursework={data.coursework} sectionTitle={data.sectionTitles?.coursework} />
+                            );
+                        case 'extracurricular':
+                            return data.extracurricular && data.extracurricular.length > 0 && (
+                                <ExtracurricularSection key="extracurricular" extracurricular={data.extracurricular} sectionTitle={data.sectionTitles?.extracurricular} />
+                            );
+                        case 'customSections':
+                            return data.customSections && data.customSections.length > 0 && (
+                                <CustomSections key="custom-sections" data={data.customSections} />
+                            );
+                        default:
+                            return null;
+                    }
+                })}
             </main>
 
             {/* Footer */}

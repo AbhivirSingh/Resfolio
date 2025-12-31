@@ -89,10 +89,26 @@ const PortfolioSchema: Schema = new Schema({
         title: String,
         items: [String],
     }],
+    sectionTitles: {
+        skills: String,
+        experience: String,
+        projects: String,
+        education: String,
+        certifications: String,
+        publications: String,
+        extracurricular: String,
+        achievements: String,
+        coursework: String,
+    },
+    sectionOrder: [String],
     theme: { type: String, default: "modern" },
 }, { timestamps: true });
 
 // Prevent model recompilation error in development
+// Prevent model recompilation error in development
+if (process.env.NODE_ENV === "development") {
+    delete mongoose.models.Portfolio;
+}
 const Portfolio: Model<IPortfolio> = mongoose.models.Portfolio || mongoose.model<IPortfolio>("Portfolio", PortfolioSchema);
 
 export default Portfolio;

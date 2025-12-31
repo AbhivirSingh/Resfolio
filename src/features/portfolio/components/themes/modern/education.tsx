@@ -4,7 +4,7 @@ import { RevealOnScroll } from '@/components/ui/reveal-on-scroll';
 import { GraduationCap } from 'lucide-react';
 import { EducationSectionProps } from '@/types/portfolio';
 
-const EducationSection: React.FC<EducationSectionProps> = ({ education }) => {
+const EducationSection: React.FC<EducationSectionProps & { sectionTitle?: string }> = ({ education, sectionTitle }) => {
   if (!education || education.length === 0) return null;
 
   return (
@@ -14,7 +14,7 @@ const EducationSection: React.FC<EducationSectionProps> = ({ education }) => {
           <div className="flex items-center gap-4 mb-16">
             <div className="h-px bg-gray-700 flex-1" />
             <h2 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-neon-purple">
-              Education
+              {sectionTitle || "Education"}
             </h2>
             <div className="h-px bg-gray-700 flex-1" />
           </div>

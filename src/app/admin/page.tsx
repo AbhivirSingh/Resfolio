@@ -8,6 +8,7 @@ import { PortfolioData } from "@/types/portfolio";
 import { ResumeReview } from "@/features/admin/components/resume-review/resume-review-container";
 import { Login } from "@/features/auth/components/login-form";
 import { mergePortfolioData } from "@/lib/merge";
+import { EditButton } from "@/features/admin/components/edit-button";
 
 type Step = "upload" | "review" | "success";
 
@@ -246,6 +247,7 @@ export default function AdminPage() {
                 {step === "review" && renderReviewStep()}
                 {step === "success" && renderSuccessStep()}
             </div>
+            {currentData && <EditButton portfolioId={(currentData as any)._id || "default"} />}
             <ThemeSwitcher />
         </>
     );

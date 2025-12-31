@@ -7,9 +7,10 @@ import { getDynamicGridClass } from '@/lib/utils';
 
 interface AchievementsProps {
     achievements: string[];
+    sectionTitle?: string;
 }
 
-const Achievements = ({ achievements }: AchievementsProps) => {
+const Achievements = ({ achievements, sectionTitle }: AchievementsProps) => {
     if (!achievements || achievements.length === 0) return null;
 
     return (
@@ -18,7 +19,7 @@ const Achievements = ({ achievements }: AchievementsProps) => {
                 <div className="flex items-center gap-4 mb-16">
                     <div className="h-px bg-gray-700 flex-1" />
                     <h2 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500">
-                        Achievements
+                        {sectionTitle || "Achievements"}
                     </h2>
                     <div className="h-px bg-gray-700 flex-1" />
                 </div>

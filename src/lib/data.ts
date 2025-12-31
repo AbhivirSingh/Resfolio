@@ -23,6 +23,20 @@ const defaultPortfolioData: PortfolioData = {
     achievements: [],
     coursework: [],
     customSections: [],
+    sectionTitles: {},
+    sectionOrder: [
+        "hero",
+        "experience",
+        "skills",
+        "projects",
+        "publications",
+        "achievements",
+        "certifications",
+        "education",
+        "coursework",
+        "extracurricular",
+        "customSections"
+    ],
     theme: "modern"
 };
 

@@ -1,6 +1,55 @@
 # Resfolio: AI-Powered Resume Portfolio Generator
 
-**Resfolio** is a sophisticated, resume-driven portfolio generator that leverages Large Language Models (LLMs) to transform static PDF resumes into dynamic, multi-themed personal websites. Built with **Next.js 15**, it features a robust architecture designed for seamless data extraction, real-time preview, and persistent storage.
+**Resfolio** is a sophisticated, resume-driven portfolio generator that leverages Large Language Models (LLMs) to transform static PDF resumes into dynamic, multi-themed personal websites. Built with **Next.js 16**, it features a robust architecture designed for seamless data extraction, real-time preview, and persistent storage.
+
+---
+
+## ✨ Features
+
+### 🤖 AI-Powered Resume Parsing
+- **PDF Text Extraction**: Leverages `pdfjs-dist` to extract raw text from uploaded resumes
+- **Intelligent Structuring**: Uses Perplexity AI (Sonar Pro) to intelligently parse and structure resume data into a comprehensive JSON schema
+- **One-Click Import**: Transform your PDF resume into a fully editable portfolio in seconds
+
+### ✏️ Real-Time Visual Editor
+- **Craft.js Integration**: Built on [@craftjs/core](https://craft.js.org/) for drag-and-drop editing
+- **Live Preview**: See changes instantly as you edit
+- **Component Toolbox**: Drag-and-drop interface for adding sections:
+  - Hero Section (Personal Info)
+  - Experience
+  - Projects
+  - Skills
+  - Education
+  - Certifications
+  - Publications
+  - Achievements
+  - Coursework
+  - Extracurricular Activities
+  - Custom Sections
+
+### 🎯 Inline Editing
+- **Click-to-Edit**: All text fields are directly editable on the canvas
+- **Link Popover**: Edit social profile links (GitHub, LinkedIn, LeetCode, HackerRank, etc.) with a convenient popover interface
+- **Floating Toolbar**: Context-aware toolbar for quick formatting and actions
+- **Auto-Save**: Changes are automatically persisted to MongoDB
+
+### 📋 Section Management
+- **Drag-and-Drop Reordering**: Rearrange sections using [@dnd-kit](https://dndkit.com/)
+- **Custom Section Titles**: Rename default section headers
+- **Add/Remove Sections**: Dynamically add or remove portfolio sections
+- **Persistent Layout**: Section order and titles are saved to the database
+
+### 🎨 Multi-Theme Support
+- **Modern Theme**: Contemporary design with vibrant colors and animations
+- **Minimalist Theme**: Clean, professional layout
+- **Creative Theme**: Bold, artistic presentation
+- **Professional Theme**: Traditional, corporate-friendly design
+- **Theme Switching**: Change themes without losing data
+
+### 💾 Data Persistence
+- **MongoDB Integration**: All portfolio data stored securely
+- **Upsert Operations**: Seamless updates without data duplication
+- **Real-Time Sync**: Changes reflected immediately on the live portfolio
 
 ---
 
@@ -113,14 +162,20 @@ sequenceDiagram
 ## 🛠️ Tech Stack
 
 ### Core Framework
--   **Next.js 15 (App Router)**: React framework for server-side rendering and API routes.
--   **TypeScript**: Strict type safety across the entire stack (Shared `PortfolioData` interfaces).
+-   **Next.js 16 (App Router)**: React framework for server-side rendering and API routes.
+-   **TypeScript 5**: Strict type safety across the entire stack (Shared `PortfolioData` interfaces).
 -   **React 19**: Component-based UI library.
 
 ### Styling & UI
 -   **Tailwind CSS v4**: Utility-first styling.
 -   **Framer Motion**: Complex animations (page transitions, scroll reveals).
 -   **Lucide React**: Consistent icon set.
+
+### Editor & Interactivity
+-   **Craft.js**: Drag-and-drop page builder framework for React.
+-   **@dnd-kit**: Modern drag-and-drop toolkit for section reordering.
+-   **Lodash**: Utility library for data manipulation.
+-   **use-debounce**: Performance optimization for real-time editing.
 
 ### Backend & Data
 -   **MongoDB & Mongoose**: NoSQL database for flexible document storage.

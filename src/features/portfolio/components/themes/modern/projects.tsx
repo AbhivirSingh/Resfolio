@@ -7,9 +7,10 @@ import { getDynamicGridClass } from '@/lib/utils';
 
 interface ProjectsSectionProps {
   projects: PortfolioData["projects"];
+  sectionTitle?: string;
 }
 
-const ProjectsSection: React.FC<ProjectsSectionProps> = ({ projects }) => {
+const ProjectsSection: React.FC<ProjectsSectionProps> = ({ projects, sectionTitle }) => {
   return (
     <section id="projects" className="py-20 relative bg-black/50">
       <div className="container mx-auto px-4">
@@ -17,7 +18,7 @@ const ProjectsSection: React.FC<ProjectsSectionProps> = ({ projects }) => {
           <div className="flex items-center gap-4 mb-16">
             <div className="h-px bg-gray-700 flex-1" />
             <h2 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-neon-purple to-neon-blue text-center">
-              Featured Projects
+              {sectionTitle || "Featured Projects"}
             </h2>
             <div className="h-px bg-gray-700 flex-1" />
           </div>

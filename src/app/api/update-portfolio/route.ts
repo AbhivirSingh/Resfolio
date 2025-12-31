@@ -12,6 +12,9 @@ export async function POST(req: NextRequest) {
         console.log("=== Update portfolio API called ===");
 
         const portfolioData: PortfolioData = await req.json();
+        console.log("Received data structure:", Object.keys(portfolioData));
+        console.log("Section Order in payload:", portfolioData.sectionOrder);
+        console.log("Section Titles in payload:", portfolioData.sectionTitles);
 
         // Validate the data structure
         if (!portfolioData.personalInfo || !portfolioData.skills || !portfolioData.experience || !portfolioData.projects) {

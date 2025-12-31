@@ -4,15 +4,15 @@ import { RevealOnScroll } from '@/components/ui/reveal-on-scroll';
 import { getDynamicGridClass } from '@/lib/utils';
 import { SkillsSectionProps } from '@/types/portfolio';
 
-const SkillsSection: React.FC<SkillsSectionProps> = ({ skills }) => {
+const SkillsSection: React.FC<SkillsSectionProps & { sectionTitle?: string }> = ({ skills, sectionTitle }) => {
   return (
-    <section id="skills" className="py-20 relative bg-gradient-to-b from-transparent to-slate-900/50">
+    <section id="skills" className="py-20 relative bg-gradient-to-b">
       <div className="container mx-auto px-4">
         <RevealOnScroll>
           <div className="flex items-center gap-4 mb-16">
             <div className="h-px bg-gray-700 flex-1" />
             <h2 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-neon-blue to-neon-green">
-              Technical Skills
+              {sectionTitle || "Technical Skills"}
             </h2>
             <div className="h-px bg-gray-700 flex-1" />
           </div>
