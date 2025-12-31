@@ -2,7 +2,7 @@
 import React, { useMemo } from 'react';
 import { useNode, useEditor } from '@craftjs/core';
 import { COMPONENT_NAMES } from '@/lib/editor-utils';
-import { Trash2, Plus, Trophy, ChevronUp, ChevronDown } from 'lucide-react';
+import { Trash2, Plus, Trophy, ChevronUp, ChevronDown, Eye, EyeOff } from 'lucide-react';
 import { SortableList } from '../dnd/sortable-list';
 import { InlineEdit } from '../ui/inline-edit';
 import { verticalListSortingStrategy } from '@dnd-kit/sortable';
@@ -10,6 +10,7 @@ import { verticalListSortingStrategy } from '@dnd-kit/sortable';
 interface EditableAchievementsProps {
     achievements: string[];
     sectionTitle?: string;
+    hidden?: boolean;
 }
 
 export const EditableAchievements = (props: EditableAchievementsProps) => {
@@ -17,6 +18,13 @@ export const EditableAchievements = (props: EditableAchievementsProps) => {
     const { enabled, actions: editorActions, query } = useEditor((state: any, query) => ({ enabled: state.options.enabled, query }));
     const achievements = props.achievements || [];
     const sectionTitle = props.sectionTitle;
+    const isHidden = props.hidden;
+
+    const toggleSectionVisibility = () => {
+        setProp((props: any) => {
+            props.hidden = !props.hidden;
+        });
+    };
     const handleTitleChange = (newTitle: string) => setProp((props: any) => props.sectionTitle = newTitle);
     const handleDeleteSection = () => { if (confirm('Delete this entire Achievements section? (Your data will be kept and can be re-added from the toolbox)')) editorActions.delete(id); };
     const handleMoveUp = () => { const parent = query.node(id).get().data.parent; if (!parent) return; const parentNode = query.node(parent).get(); const childNodes = parentNode.data.nodes || []; const currentIndex = childNodes.indexOf(id); if (currentIndex > 0) editorActions.move(id, parent, currentIndex - 1); };
@@ -61,13 +69,18 @@ export const EditableAchievements = (props: EditableAchievementsProps) => {
                     Achievements Section
                 </div>
             )}
-            {enabled && (<div className="absolute top-2 right-2 flex gap-2 z-50"><button onClick={handleMoveUp} className="bg-blue-500/80 hover:bg-blue-500 text-white p-2 rounded transition-colors" title="Move Section Up"><ChevronUp size={16} /></button><button onClick={handleMoveDown} className="bg-blue-500/80 hover:bg-blue-500 text-white p-2 rounded transition-colors" title="Move Section Down"><ChevronDown size={16} /></button><button onClick={handleDeleteSection} className="bg-red-500/80 hover:bg-red-500 text-white p-2 rounded transition-colors" title="Delete Section"><Trash2 size={16} /></button></div>)}
+            {enabled && (<div className="absolute top-2 right-2 flex gap-2 z-50"><button onClick={handleMoveUp} className="bg-blue-500/80 hover:bg-blue-500 text-white p-2 rounded transition-colors" title="Move Section Up"><ChevronUp size={16} /></button><button onClick={handleMoveDown} className="bg-blue-500/80 hover:bg-blue-500 text-white p-2 rounded transition-colors" title="Move Section Down"><ChevronDown size={16} /></button><button onClick={toggleSectionVisibility} className="bg-blue-500/80 hover:bg-blue-500 text-white p-2 rounded transition-colors" title={isHidden ? "Show Section" : "Hide Section"}>
+                {isHidden ? <EyeOff size={16} /> : <Eye size={16} />}
+            </button><button onClick={handleDeleteSection} className="bg-red-500/80 hover:bg-red-500 text-white p-2 rounded transition-colors" title="Delete Section"><Trash2 size={16} /></button></div>)}
 
             <section id="achievements" className="py-20 relative bg-[#050505]">
                 <div className="container mx-auto px-4">
                     <div className="flex items-center gap-4 mb-16">
                         <div className="h-px bg-gray-700 flex-1" />
-                        <h2 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-neon-blue to-neon-purple"><InlineEdit value={sectionTitle || "Achievements"} onChange={handleTitleChange} placeholder="Section Title" className="text-center" /></h2>
+                        <h2 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-neon-blue to-neon-purple flex items-center justify-center gap-4">
+                            <InlineEdit value={sectionTitle || "Achievements"} onChange={handleTitleChange} placeholder="Section Title" className="text-center" />
+                            {isHidden && <span className="text-sm bg-gray-800 text-gray-400 px-2 py-1 rounded border border-gray-700">Hidden from Public</span>}
+                        </h2>
                         <div className="h-px bg-gray-700 flex-1" />
                     </div>
 

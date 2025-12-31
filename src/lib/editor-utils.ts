@@ -25,6 +25,10 @@ export const reconstructPortfolioData = (nodes: SerializedNodes, originalData: P
         newData.sectionTitles = {};
     }
 
+    if (!newData.sectionVisibility) {
+        newData.sectionVisibility = {};
+    }
+
     // Determine section order from the Container node
     // Find the Container node (it usually has displayName "Container")
     const containerNode = Object.values(nodes).find(n => n.displayName === "Container" || (n.type as any).resolvedName === "Container");
@@ -65,48 +69,58 @@ export const reconstructPortfolioData = (nodes: SerializedNodes, originalData: P
             if (node.props.sectionTitle) {
                 newData.sectionTitles!.experience = node.props.sectionTitle;
             }
+            newData.sectionVisibility!.experience = !!node.props.hidden;
         } else if (name === COMPONENT_NAMES.PROJECTS) {
             newData.projects = node.props.projects;
             if (node.props.sectionTitle) {
                 newData.sectionTitles!.projects = node.props.sectionTitle;
             }
+            newData.sectionVisibility!.projects = !!node.props.hidden;
         } else if (name === COMPONENT_NAMES.SKILLS) {
             newData.skills = node.props.skills;
             if (node.props.sectionTitle) {
                 newData.sectionTitles!.skills = node.props.sectionTitle;
             }
+            newData.sectionVisibility!.skills = !!node.props.hidden;
         } else if (name === COMPONENT_NAMES.EDUCATION) {
             newData.education = node.props.education;
             if (node.props.sectionTitle) {
                 newData.sectionTitles!.education = node.props.sectionTitle;
             }
+            newData.sectionVisibility!.education = !!node.props.hidden;
         } else if (name === COMPONENT_NAMES.CERTIFICATIONS) {
             newData.certifications = node.props.certifications;
             if (node.props.sectionTitle) {
                 newData.sectionTitles!.certifications = node.props.sectionTitle;
             }
+            newData.sectionVisibility!.certifications = !!node.props.hidden;
         } else if (name === COMPONENT_NAMES.PUBLICATIONS) {
             newData.publications = node.props.publications;
             if (node.props.sectionTitle) {
                 newData.sectionTitles!.publications = node.props.sectionTitle;
             }
+            newData.sectionVisibility!.publications = !!node.props.hidden;
         } else if (name === COMPONENT_NAMES.EXTRACURRICULAR) {
             newData.extracurricular = node.props.extracurricular;
             if (node.props.sectionTitle) {
                 newData.sectionTitles!.extracurricular = node.props.sectionTitle;
             }
+            newData.sectionVisibility!.extracurricular = !!node.props.hidden;
         } else if (name === COMPONENT_NAMES.ACHIEVEMENTS) {
             newData.achievements = node.props.achievements;
             if (node.props.sectionTitle) {
                 newData.sectionTitles!.achievements = node.props.sectionTitle;
             }
+            newData.sectionVisibility!.achievements = !!node.props.hidden;
         } else if (name === COMPONENT_NAMES.COURSEWORK) {
             newData.coursework = node.props.coursework;
             if (node.props.sectionTitle) {
                 newData.sectionTitles!.coursework = node.props.sectionTitle;
             }
+            newData.sectionVisibility!.coursework = !!node.props.hidden;
         } else if (name === COMPONENT_NAMES.CUSTOM_SECTIONS) {
             newData.customSections = node.props.customSections;
+            // Custom sections visibility logic might be more complex if per-section
         }
     });
 
@@ -154,6 +168,9 @@ export const generateChangeLog = (initial: PortfolioData, current: PortfolioData
     }
     if (!_.isEqual(initial.sectionOrder, current.sectionOrder)) {
         changes.push("Updated Section Order");
+    }
+    if (!_.isEqual(initial.sectionVisibility, current.sectionVisibility)) {
+        changes.push("Updated Section Visibility");
     }
 
     return changes;

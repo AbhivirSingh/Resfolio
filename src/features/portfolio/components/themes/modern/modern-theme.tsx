@@ -48,54 +48,72 @@ export function ModernTheme({ data }: { data: PortfolioData }) {
                     'hero', 'experience', 'skills', 'projects', 'publications',
                     'achievements', 'certifications', 'education', 'coursework',
                     'extracurricular', 'customSections'
-                ]).map((sectionName) => {
-                    switch (sectionName) {
-                        case 'hero':
-                            return <Hero key="hero" personalInfo={data.personalInfo} socialProfiles={data.socialProfiles} />;
-                        case 'experience':
-                            return data.experience && data.experience.length > 0 && (
-                                <ExperienceSection key="experience" experience={data.experience} sectionTitle={data.sectionTitles?.experience} />
-                            );
-                        case 'skills':
-                            return data.skills && data.skills.length > 0 && (
-                                <SkillsSection key="skills" skills={data.skills} sectionTitle={data.sectionTitles?.skills} />
-                            );
-                        case 'projects':
-                            return data.projects && data.projects.length > 0 && (
-                                <ProjectsSection key="projects" projects={data.projects} sectionTitle={data.sectionTitles?.projects} />
-                            );
-                        case 'publications':
-                            return data.publications && data.publications.length > 0 && (
-                                <PublicationsSection key="publications" publications={data.publications} sectionTitle={data.sectionTitles?.publications} />
-                            );
-                        case 'achievements':
-                            return data.achievements && data.achievements.length > 0 && (
-                                <Achievements key="achievements" achievements={data.achievements} sectionTitle={data.sectionTitles?.achievements} />
-                            );
-                        case 'certifications':
-                            return data.certifications && data.certifications.length > 0 && (
-                                <CertificationsSection key="certifications" certifications={data.certifications} sectionTitle={data.sectionTitles?.certifications} />
-                            );
-                        case 'education':
-                            return data.education && data.education.length > 0 && (
-                                <EducationSection key="education" education={data.education} sectionTitle={data.sectionTitles?.education} />
-                            );
-                        case 'coursework':
-                            return data.coursework && data.coursework.length > 0 && (
-                                <CourseworkSection key="coursework" coursework={data.coursework} sectionTitle={data.sectionTitles?.coursework} />
-                            );
-                        case 'extracurricular':
-                            return data.extracurricular && data.extracurricular.length > 0 && (
-                                <ExtracurricularSection key="extracurricular" extracurricular={data.extracurricular} sectionTitle={data.sectionTitles?.extracurricular} />
-                            );
-                        case 'customSections':
-                            return data.customSections && data.customSections.length > 0 && (
-                                <CustomSections key="custom-sections" data={data.customSections} />
-                            );
-                        default:
-                            return null;
-                    }
-                })}
+                ])
+                    .filter(sectionName => !data.sectionVisibility?.[sectionName]) // Filter hidden sections
+                    .map((sectionName) => {
+                        switch (sectionName) {
+                            case 'hero':
+                                // Hero is usually always visible if in order, but we can check sectionVisibility too if needed
+                                return <Hero key="hero" personalInfo={data.personalInfo} socialProfiles={data.socialProfiles} />;
+                            case 'experience':
+                                // Filter hidden items
+                                const visibleExperience = data.experience?.filter(item => !item.hidden) || [];
+                                return visibleExperience.length > 0 && (
+                                    <ExperienceSection key="experience" experience={visibleExperience} sectionTitle={data.sectionTitles?.experience} />
+                                );
+                            case 'skills':
+                                // Skills structure is categories -> items. We might need to filter categories if they have a hidden prop (not yet added to type), or just sections.
+                                // Assuming skills categories don't have hidden prop yet, just section level.
+                                return data.skills && data.skills.length > 0 && (
+                                    <SkillsSection key="skills" skills={data.skills} sectionTitle={data.sectionTitles?.skills} />
+                                );
+                            case 'projects':
+                                const visibleProjects = data.projects?.filter(item => !item.hidden) || [];
+                                return visibleProjects.length > 0 && (
+                                    <ProjectsSection key="projects" projects={visibleProjects} sectionTitle={data.sectionTitles?.projects} />
+                                );
+                            case 'publications':
+                                const visiblePublications = data.publications?.filter(item => !item.hidden) || [];
+                                return visiblePublications.length > 0 && (
+                                    <PublicationsSection key="publications" publications={visiblePublications} sectionTitle={data.sectionTitles?.publications} />
+                                );
+                            case 'achievements':
+                                // achievements is string[], so no hidden prop per item unless we change schema. 
+                                // Just section visibility for now.
+                                return data.achievements && data.achievements.length > 0 && (
+                                    <Achievements key="achievements" achievements={data.achievements} sectionTitle={data.sectionTitles?.achievements} />
+                                );
+                            case 'certifications':
+                                const visibleCertifications = data.certifications?.filter(item => !item.hidden) || [];
+                                return visibleCertifications.length > 0 && (
+                                    <CertificationsSection key="certifications" certifications={visibleCertifications} sectionTitle={data.sectionTitles?.certifications} />
+                                );
+                            case 'education':
+                                const visibleEducation = data.education?.filter(item => !item.hidden) || [];
+                                return visibleEducation.length > 0 && (
+                                    <EducationSection key="education" education={visibleEducation} sectionTitle={data.sectionTitles?.education} />
+                                );
+                            case 'coursework':
+                                // coursework is string[], same as achievements
+                                return data.coursework && data.coursework.length > 0 && (
+                                    <CourseworkSection key="coursework" coursework={data.coursework} sectionTitle={data.sectionTitles?.coursework} />
+                                );
+                            case 'extracurricular':
+                                const visibleExtracurricular = data.extracurricular?.filter(item => !item.hidden) || [];
+                                return visibleExtracurricular.length > 0 && (
+                                    <ExtracurricularSection key="extracurricular" extracurricular={visibleExtracurricular} sectionTitle={data.sectionTitles?.extracurricular} />
+                                );
+                            case 'customSections':
+                                // Custom sections might need deep check but for now section level
+                                // If items have hidden, filter:
+                                // const visibleCustom = data.customSections?.map(s => ({...s, items: s.items.filter(i => !i.hidden)})) ... wait items are strings?
+                                return data.customSections && data.customSections.length > 0 && (
+                                    <CustomSections key="custom-sections" data={data.customSections} />
+                                );
+                            default:
+                                return null;
+                        }
+                    })}
             </main>
 
             {/* Footer */}

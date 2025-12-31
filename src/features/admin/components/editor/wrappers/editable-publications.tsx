@@ -3,7 +3,7 @@ import React, { useMemo } from 'react';
 import { useNode, useEditor } from '@craftjs/core';
 import { PortfolioData } from '@/types/portfolio';
 import { COMPONENT_NAMES } from '@/lib/editor-utils';
-import { Trash2, Plus, BookOpen, ChevronUp, ChevronDown } from 'lucide-react';
+import { Trash2, Plus, BookOpen, ChevronUp, ChevronDown, Eye, EyeOff } from 'lucide-react';
 import { SortableList } from '../dnd/sortable-list';
 import { InlineEdit } from '../ui/inline-edit';
 import { verticalListSortingStrategy } from '@dnd-kit/sortable';
@@ -11,6 +11,7 @@ import { verticalListSortingStrategy } from '@dnd-kit/sortable';
 interface EditablePublicationsProps {
     publications: PortfolioData['publications'];
     sectionTitle?: string;
+    hidden?: boolean;
 }
 
 export const EditablePublications = (props: EditablePublicationsProps) => {
@@ -18,6 +19,19 @@ export const EditablePublications = (props: EditablePublicationsProps) => {
     const { enabled, actions: editorActions, query } = useEditor((state: any, query) => ({ enabled: state.options.enabled, query }));
     const publications = props.publications || [];
     const sectionTitle = props.sectionTitle;
+    const isHidden = props.hidden;
+
+    const toggleSectionVisibility = () => {
+        setProp((props: any) => {
+            props.hidden = !props.hidden;
+        });
+    };
+
+    const toggleHide = (index: number) => {
+        setProp((props: any) => {
+            props.publications[index].hidden = !props.publications[index].hidden;
+        });
+    };
     const handleTitleChange = (newTitle: string) => setProp((props: any) => props.sectionTitle = newTitle);
     const handleDeleteSection = () => { if (confirm('Delete this entire Publications section? (Your data will be kept and can be re-added from the toolbox)')) editorActions.delete(id); };
     const handleMoveUp = () => { const parent = query.node(id).get().data.parent; if (!parent) return; const parentNode = query.node(parent).get(); const childNodes = parentNode.data.nodes || []; const currentIndex = childNodes.indexOf(id); if (currentIndex > 0) editorActions.move(id, parent, currentIndex - 1); };
@@ -68,13 +82,18 @@ export const EditablePublications = (props: EditablePublicationsProps) => {
                     Publications Section
                 </div>
             )}
-            {enabled && (<div className="absolute top-2 right-2 flex gap-2 z-50"><button onClick={handleMoveUp} className="bg-blue-500/80 hover:bg-blue-500 text-white p-2 rounded transition-colors" title="Move Section Up"><ChevronUp size={16} /></button><button onClick={handleMoveDown} className="bg-blue-500/80 hover:bg-blue-500 text-white p-2 rounded transition-colors" title="Move Section Down"><ChevronDown size={16} /></button><button onClick={handleDeleteSection} className="bg-red-500/80 hover:bg-red-500 text-white p-2 rounded transition-colors" title="Delete Section"><Trash2 size={16} /></button></div>)}
+            {enabled && (<div className="absolute top-2 right-2 flex gap-2 z-50"><button onClick={handleMoveUp} className="bg-blue-500/80 hover:bg-blue-500 text-white p-2 rounded transition-colors" title="Move Section Up"><ChevronUp size={16} /></button><button onClick={handleMoveDown} className="bg-blue-500/80 hover:bg-blue-500 text-white p-2 rounded transition-colors" title="Move Section Down"><ChevronDown size={16} /></button><button onClick={toggleSectionVisibility} className="bg-blue-500/80 hover:bg-blue-500 text-white p-2 rounded transition-colors" title={isHidden ? "Show Section" : "Hide Section"}>
+                {isHidden ? <EyeOff size={16} /> : <Eye size={16} />}
+            </button><button onClick={handleDeleteSection} className="bg-red-500/80 hover:bg-red-500 text-white p-2 rounded transition-colors" title="Delete Section"><Trash2 size={16} /></button></div>)}
 
             <section id="publications" className="py-20 relative bg-[#050505]">
                 <div className="container mx-auto px-4">
                     <div className="flex items-center gap-4 mb-16">
                         <div className="h-px bg-gray-700 flex-1" />
-                        <h2 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-neon-blue to-neon-purple"><InlineEdit value={sectionTitle || "Publications"} onChange={handleTitleChange} placeholder="Section Title" className="text-center" /></h2>
+                        <h2 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-neon-blue to-neon-purple flex items-center justify-center gap-4">
+                            <InlineEdit value={sectionTitle || "Publications"} onChange={handleTitleChange} placeholder="Section Title" className="text-center" />
+                            {isHidden && <span className="text-sm bg-gray-800 text-gray-400 px-2 py-1 rounded border border-gray-700">Hidden from Public</span>}
+                        </h2>
                         <div className="h-px bg-gray-700 flex-1" />
                     </div>
 
@@ -86,27 +105,37 @@ export const EditablePublications = (props: EditablePublicationsProps) => {
                             className="space-y-6"
                             disabled={!enabled}
                             renderItem={(pub, index, isOverlay) => (
-                                <div className={`relative p-6 rounded-xl bg-white/5 border border-white/10 ${enabled ? 'hover:border-neon-blue/30' : ''} transition-all group/card ${isOverlay ? 'shadow-2xl bg-gray-900 z-50' : ''}`}>
+                                <div className={`relative p-6 rounded-xl bg-white/5 border border-white/10 ${enabled ? 'hover:border-neon-blue/30' : ''} transition-all group/card ${isOverlay ? 'shadow-2xl bg-gray-900 z-50' : ''} ${pub.hidden ? 'opacity-50 grayscale' : ''}`}>
 
-                                    {/* Delete Button */}
+                                    {/* Action Buttons */}
                                     {!isOverlay && enabled && (
-                                        <button
-                                            onClick={(e) => { e.stopPropagation(); handleDelete(index); }}
-                                            className="absolute top-4 right-4 text-red-500/0 group-hover/card:text-red-500/100 transition-all p-1 hover:bg-red-500/10 rounded"
-                                        >
-                                            <Trash2 size={16} />
-                                        </button>
+                                        <div className="absolute top-4 right-4 flex gap-2">
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); toggleHide(index); }}
+                                                className="text-gray-400 hover:text-white transition-colors p-1 rounded hover:bg-white/10"
+                                                title={pub.hidden ? "Show Item" : "Hide Item"}
+                                            >
+                                                {pub.hidden ? <EyeOff size={16} /> : <Eye size={16} />}
+                                            </button>
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); handleDelete(index); }}
+                                                className="text-red-500/50 group-hover/card:text-red-500/100 transition-all p-1 hover:bg-red-500/10 rounded"
+                                            >
+                                                <Trash2 size={16} />
+                                            </button>
+                                        </div>
                                     )}
 
                                     <div className="flex gap-4 items-start">
                                         <BookOpen size={24} className="text-neon-blue mt-1 shrink-0" />
                                         <div className="flex-1 space-y-2">
-                                            <h3 className="text-xl font-bold text-white">
+                                            <h3 className="text-xl font-bold text-white flex items-center gap-2">
                                                 <InlineEdit
                                                     value={pub.title}
                                                     onChange={(v) => handleUpdate(index, 'title', v)}
                                                     placeholder="Publication Title"
                                                 />
+                                                {pub.hidden && <span className="text-xs bg-red-500/20 text-red-400 px-2 py-0.5 rounded border border-red-500/30">HIDDEN</span>}
                                             </h3>
                                             <div className="text-gray-400 text-sm leading-relaxed">
                                                 <InlineEdit

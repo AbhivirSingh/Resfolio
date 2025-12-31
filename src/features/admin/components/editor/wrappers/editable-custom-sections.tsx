@@ -3,7 +3,7 @@ import React, { useMemo } from 'react';
 import { useNode, useEditor } from '@craftjs/core';
 import { PortfolioData } from '@/types/portfolio';
 import { COMPONENT_NAMES } from '@/lib/editor-utils';
-import { Trash2, Plus, Layout, ChevronUp, ChevronDown } from 'lucide-react';
+import { Trash2, Plus, Layout, ChevronUp, ChevronDown, Eye, EyeOff } from 'lucide-react';
 import { SortableList } from '../dnd/sortable-list';
 import { InlineEdit } from '../ui/inline-edit';
 import { verticalListSortingStrategy } from '@dnd-kit/sortable';
@@ -11,6 +11,7 @@ import { verticalListSortingStrategy } from '@dnd-kit/sortable';
 interface EditableCustomSectionsProps {
     customSections: PortfolioData['customSections'];
     sectionTitle?: string;
+    hidden?: boolean;
 }
 
 export const EditableCustomSections = (props: EditableCustomSectionsProps) => {
@@ -18,6 +19,19 @@ export const EditableCustomSections = (props: EditableCustomSectionsProps) => {
     const { enabled, actions: editorActions, query } = useEditor((state: any, query) => ({ enabled: state.options.enabled, query }));
     const customSections = props.customSections || [];
     const sectionTitle = props.sectionTitle;
+    const isHidden = props.hidden;
+
+    const toggleGroupVisibility = () => {
+        setProp((props: any) => {
+            props.hidden = !props.hidden;
+        });
+    };
+
+    const toggleSectionVisibility = (index: number) => {
+        setProp((props: any) => {
+            props.customSections[index].hidden = !props.customSections[index].hidden;
+        });
+    };
 
     const handleTitleChange = (newTitle: string) => setProp((props: any) => props.sectionTitle = newTitle);
     const handleDeleteSection = () => {
@@ -130,6 +144,9 @@ export const EditableCustomSections = (props: EditableCustomSectionsProps) => {
                     >
                         <Trash2 size={16} />
                     </button>
+                    <button onClick={toggleGroupVisibility} className="bg-blue-500/80 hover:bg-blue-500 text-white p-2 rounded transition-colors" title={isHidden ? "Show Group" : "Hide Group"}>
+                        {isHidden ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
                 </div>
             )}
 
@@ -141,6 +158,7 @@ export const EditableCustomSections = (props: EditableCustomSectionsProps) => {
                             onChange={handleTitleChange}
                             placeholder="Group Title"
                         />
+                        {isHidden && <span className="text-sm bg-gray-800 text-gray-400 px-2 py-1 ml-4 rounded border border-gray-700 align-middle">Hidden from Public</span>}
                     </h2>
                 </div>
                 <div className="container mx-auto px-4">
@@ -151,7 +169,7 @@ export const EditableCustomSections = (props: EditableCustomSectionsProps) => {
                         className="space-y-16 max-w-5xl mx-auto"
                         disabled={!enabled}
                         renderItem={(section, sectionIndex, isOverlay) => (
-                            <section key={section.id} className={`relative ${isOverlay ? 'shadow-2xl bg-gray-900 z-50 p-4 rounded-xl' : ''}`}>
+                            <section key={section.id} className={`relative ${isOverlay ? 'shadow-2xl bg-gray-900 z-50 p-4 rounded-xl' : ''} ${section.hidden ? 'opacity-50 grayscale' : ''}`}>
                                 <div className="flex items-center gap-4 mb-12 group/section">
                                     <div className="h-px bg-gray-700 flex-1" />
                                     <h2 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-neon-blue to-neon-purple relative">
@@ -161,12 +179,21 @@ export const EditableCustomSections = (props: EditableCustomSectionsProps) => {
                                             placeholder="Section Title"
                                         />
                                         {!isOverlay && enabled && (
-                                            <button
-                                                onClick={(e) => { e.stopPropagation(); handleSectionDelete(sectionIndex); }}
-                                                className="absolute -right-8 top-1/2 -translate-y-1/2 opacity-0 group-hover/section:opacity-100 text-red-500 hover:bg-red-500/10 p-1 rounded transition-all"
-                                            >
-                                                <Trash2 size={18} />
-                                            </button>
+                                            <div className="absolute -right-8 top-1/2 -translate-y-1/2 flex flex-col gap-2">
+                                                <button
+                                                    onClick={(e) => { e.stopPropagation(); toggleSectionVisibility(sectionIndex); }}
+                                                    className="opacity-0 group-hover/section:opacity-100 text-gray-400 hover:text-white p-1 rounded transition-all"
+                                                    title={section.hidden ? "Show Section" : "Hide Section"}
+                                                >
+                                                    {section.hidden ? <EyeOff size={18} /> : <Eye size={18} />}
+                                                </button>
+                                                <button
+                                                    onClick={(e) => { e.stopPropagation(); handleSectionDelete(sectionIndex); }}
+                                                    className="opacity-0 group-hover/section:opacity-100 text-red-500 hover:bg-red-500/10 p-1 rounded transition-all"
+                                                >
+                                                    <Trash2 size={18} />
+                                                </button>
+                                            </div>
                                         )}
                                     </h2>
                                     <div className="h-px bg-gray-700 flex-1" />

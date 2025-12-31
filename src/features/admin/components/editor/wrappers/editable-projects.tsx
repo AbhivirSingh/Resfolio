@@ -3,7 +3,8 @@ import React, { useMemo } from 'react';
 import { useNode, useEditor } from '@craftjs/core';
 import { PortfolioData } from '@/types/portfolio';
 import { COMPONENT_NAMES } from '@/lib/editor-utils';
-import { Trash2, Plus, Code2, ExternalLink, Github, ChevronRight, ChevronUp, ChevronDown } from 'lucide-react';
+import { Trash2, Plus, Code2, ExternalLink, Github, ChevronRight, ChevronUp, ChevronDown, Eye, EyeOff } from 'lucide-react';
+import { useDeleteItem } from '../../../hooks/use-delete-item';
 import { SortableList } from '../dnd/sortable-list';
 import { InlineEdit } from '../ui/inline-edit';
 import { LinkPopover } from '../ui/link-popover';
@@ -12,17 +13,20 @@ import { verticalListSortingStrategy, rectSortingStrategy } from '@dnd-kit/sorta
 interface EditableProjectsProps {
     projects: PortfolioData['projects'];
     sectionTitle?: string;
+    hidden?: boolean;
 }
 
 export const EditableProjects = (props: EditableProjectsProps) => {
 
     const { connectors: { connect, drag }, actions: { setProp }, id } = useNode();
+    const { deleteItem, isDeleting } = useDeleteItem();
     const { enabled, actions: editorActions, query } = useEditor((state: any, query) => ({
         enabled: state.options.enabled,
         query
     }));
     const projects = props.projects || [];
     const sectionTitle = props.sectionTitle;
+    const isHidden = props.hidden;
 
     const handleTitleChange = (newTitle: string) => {
         setProp((props: any) => {
@@ -30,10 +34,17 @@ export const EditableProjects = (props: EditableProjectsProps) => {
         });
     };
 
-    const handleDeleteSection = () => {
-        if (confirm('Delete this entire Projects section? (Your data will be kept and can be re-added from the toolbox)')) {
+    const handleDeleteSection = async () => {
+        const success = await deleteItem('projects');
+        if (success) {
             editorActions.delete(id);
         }
+    };
+
+    const toggleSectionVisibility = () => {
+        setProp((props: any) => {
+            props.hidden = !props.hidden;
+        });
     };
 
     const handleMoveUp = () => {
@@ -93,9 +104,19 @@ export const EditableProjects = (props: EditableProjectsProps) => {
         });
     };
 
-    const deleteProject = (index: number) => {
+    const deleteProject = async (index: number, itemId: string) => {
+        const success = await deleteItem('projects', itemId);
+        if (success) {
+            setProp((props: any) => {
+                props.projects.splice(index, 1);
+            });
+        }
+    };
+
+    const toggleHide = (index: number) => {
         setProp((props: any) => {
-            props.projects.splice(index, 1);
+            const item = props.projects[index];
+            item.hidden = !item.hidden;
         });
     };
 
@@ -151,13 +172,20 @@ export const EditableProjects = (props: EditableProjectsProps) => {
                     <button onClick={handleMoveDown} className="bg-blue-500/80 hover:bg-blue-500 text-white p-2 rounded transition-colors" title="Move Section Down">
                         <ChevronDown size={16} />
                     </button>
+                    <button
+                        onClick={toggleSectionVisibility}
+                        className="bg-gray-800 hover:bg-gray-700 text-white p-2 rounded transition-colors"
+                        title={isHidden ? "Show Section" : "Hide Section"}
+                    >
+                        {isHidden ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
                     <button onClick={handleDeleteSection} className="bg-red-500/80 hover:bg-red-500 text-white p-2 rounded transition-colors" title="Delete Section">
                         <Trash2 size={16} />
                     </button>
                 </div>
             )}
 
-            <section id="projects" className="py-20 relative bg-[#050505]">
+            <section id="projects" className={`py-20 relative bg-[#050505] ${isHidden ? 'opacity-50 grayscale' : ''}`}>
                 <div className="container mx-auto px-4">
                     <div className="flex items-center gap-4 mb-16">
                         <div className="h-px bg-gray-700 flex-1" />
@@ -168,6 +196,7 @@ export const EditableProjects = (props: EditableProjectsProps) => {
                                 placeholder="Section Title"
                                 className="text-center"
                             />
+                            {isHidden && <span className="ml-4 text-sm bg-gray-800 text-gray-400 px-2 py-1 rounded">Hidden from Public</span>}
                         </h2>
                         <div className="h-px bg-gray-700 flex-1" />
                     </div>
@@ -179,28 +208,39 @@ export const EditableProjects = (props: EditableProjectsProps) => {
                             strategy={verticalListSortingStrategy}
                             className="grid grid-cols-1 md:grid-cols-2 gap-8"
                             renderItem={(project, index, isOverlay) => (
-                                <div className={`h-full bg-white/5 border border-white/10 rounded-xl overflow-hidden ${enabled ? 'hover:border-neon-purple/50' : ''} transition-all group/card flex flex-col ${isOverlay ? 'shadow-2xl bg-gray-900 z-50' : ''}`}>
+                                <div className={`h-full bg-white/5 border border-white/10 rounded-xl overflow-hidden ${enabled ? 'hover:border-neon-purple/50' : ''} transition-all group/card flex flex-col ${isOverlay ? 'shadow-2xl bg-gray-900 z-50' : ''} ${project.hidden ? 'opacity-50 grayscale' : ''}`}>
 
-                                    {/* Delete Button */}
+                                    {/* Controls */}
                                     {!isOverlay && enabled && (
-                                        <button
-                                            onClick={(e) => { e.stopPropagation(); deleteProject(index); }}
-                                            className="absolute top-2 right-2 z-20 text-red-500/0 group-hover/card:text-red-500/100 transition-all p-1 hover:bg-red-500/10 rounded bg-black/50"
-                                        >
-                                            <Trash2 size={16} />
-                                        </button>
+                                        <div className="absolute top-2 right-2 z-20 flex gap-2">
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); toggleHide(index); }}
+                                                className="text-gray-400 hover:text-white p-1 rounded hover:bg-white/10"
+                                                title={project.hidden ? "Show" : "Hide"}
+                                            >
+                                                {project.hidden ? <EyeOff size={16} /> : <Eye size={16} />}
+                                            </button>
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); deleteProject(index, project.id); }}
+                                                className="text-red-500/70 hover:text-red-500 p-1 rounded hover:bg-red-500/10"
+                                                title="Delete Permanently"
+                                            >
+                                                <Trash2 size={16} />
+                                            </button>
+                                        </div>
                                     )}
 
                                     <div className="h-2 bg-gradient-to-r from-neon-blue to-neon-purple" />
 
                                     <div className="p-6 space-y-4 flex-1 flex flex-col">
                                         <div className="flex justify-between items-start">
-                                            <h3 className="text-2xl font-bold text-white flex-1 mr-4">
+                                            <h3 className="text-2xl font-bold text-white flex-1 mr-4 flex items-center gap-2">
                                                 <InlineEdit
                                                     value={project.title}
                                                     onChange={(v) => updateProject(index, 'title', v)}
                                                     placeholder="Project Title"
                                                 />
+                                                {project.hidden && <span className="text-xs bg-red-500/20 text-red-400 px-2 py-0.5 rounded border border-red-500/30">HIDDEN</span>}
                                             </h3>
                                             <div className="flex gap-3">
                                                 <LinkPopover

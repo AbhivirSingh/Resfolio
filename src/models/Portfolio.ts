@@ -30,6 +30,7 @@ const PortfolioSchema: Schema = new Schema({
     skills: [{
         category: { type: String, required: true },
         items: [{ type: String }],
+        hidden: Boolean,
     }],
     experience: [{
         id: String,
@@ -40,6 +41,7 @@ const PortfolioSchema: Schema = new Schema({
         location: String,
         status: String,
         mergeGroupId: String,
+        hidden: Boolean,
     }],
     projects: [{
         id: String,
@@ -50,6 +52,7 @@ const PortfolioSchema: Schema = new Schema({
         bullets: [String],
         status: String,
         mergeGroupId: String,
+        hidden: Boolean,
     }],
     education: [{
         id: String,
@@ -59,6 +62,7 @@ const PortfolioSchema: Schema = new Schema({
         score: String,
         status: String,
         mergeGroupId: String,
+        hidden: Boolean,
     }],
     certifications: [{
         id: String,
@@ -67,6 +71,7 @@ const PortfolioSchema: Schema = new Schema({
         link: String,
         status: String,
         mergeGroupId: String,
+        hidden: Boolean,
     }],
     publications: [{
         id: String,
@@ -75,6 +80,7 @@ const PortfolioSchema: Schema = new Schema({
         link: String,
         status: String,
         mergeGroupId: String,
+        hidden: Boolean,
     }],
     extracurricular: [{
         id: String,
@@ -82,6 +88,7 @@ const PortfolioSchema: Schema = new Schema({
         organization: String,
         status: String,
         mergeGroupId: String,
+        hidden: Boolean,
     }],
     achievements: [String],
     coursework: [String],
@@ -89,6 +96,7 @@ const PortfolioSchema: Schema = new Schema({
         id: String,
         title: String,
         items: [String],
+        hidden: Boolean,
     }],
     sectionTitles: {
         skills: String,
@@ -100,7 +108,9 @@ const PortfolioSchema: Schema = new Schema({
         extracurricular: String,
         achievements: String,
         coursework: String,
+        customSections: String,
     },
+    sectionVisibility: { type: Map, of: Boolean },
     sectionOrder: [String],
     theme: { type: String, default: "modern" },
 }, { timestamps: true });

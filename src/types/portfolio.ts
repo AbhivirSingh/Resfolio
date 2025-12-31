@@ -22,6 +22,7 @@ export interface PortfolioData {
     skills: {
         category: string;
         items: string[];
+        hidden?: boolean;
     }[];
     experience: {
         id: string;
@@ -32,6 +33,7 @@ export interface PortfolioData {
         location?: string;
         status?: "NEW" | "OLD";
         mergeGroupId?: string;
+        hidden?: boolean;
     }[];
     projects: {
         id: string;
@@ -42,6 +44,7 @@ export interface PortfolioData {
         bullets?: string[];
         status?: "NEW" | "OLD";
         mergeGroupId?: string;
+        hidden?: boolean;
     }[];
     education: {
         id: string;
@@ -51,6 +54,7 @@ export interface PortfolioData {
         score: string;
         status?: "NEW" | "OLD";
         mergeGroupId?: string;
+        hidden?: boolean;
     }[];
     certifications: {
         id: string;
@@ -59,6 +63,7 @@ export interface PortfolioData {
         link: string;
         status?: "NEW" | "OLD";
         mergeGroupId?: string;
+        hidden?: boolean;
     }[];
     publications: {
         id: string;
@@ -67,6 +72,7 @@ export interface PortfolioData {
         link: string;
         status?: "NEW" | "OLD";
         mergeGroupId?: string;
+        hidden?: boolean;
     }[];
     extracurricular: {
         id: string;
@@ -74,6 +80,7 @@ export interface PortfolioData {
         organization: string;
         status?: "NEW" | "OLD";
         mergeGroupId?: string;
+        hidden?: boolean;
     }[];
     achievements?: string[];
     coursework?: string[];
@@ -81,6 +88,7 @@ export interface PortfolioData {
         id: string;
         title: string;
         items: string[];
+        hidden?: boolean;
     }[];
     sectionTitles?: {
         skills?: string;
@@ -92,6 +100,10 @@ export interface PortfolioData {
         extracurricular?: string;
         achievements?: string;
         coursework?: string;
+        customSections?: string;
+    };
+    sectionVisibility?: {
+        [key: string]: boolean;
     };
     sectionOrder?: string[];
     theme?: "minimalist" | "creative" | "professional" | "modern";

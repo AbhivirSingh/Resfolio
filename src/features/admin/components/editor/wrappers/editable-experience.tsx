@@ -3,7 +3,8 @@ import React, { useMemo } from 'react';
 import { useNode, useEditor } from '@craftjs/core';
 import { PortfolioData } from '@/types/portfolio';
 import { COMPONENT_NAMES } from '@/lib/editor-utils';
-import { Trash2, Plus, Calendar, MapPin, Building2, ChevronUp, ChevronDown } from 'lucide-react';
+import { Trash2, Plus, Calendar, MapPin, Building2, ChevronUp, ChevronDown, Eye, EyeOff } from 'lucide-react';
+import { useDeleteItem } from '../../../hooks/use-delete-item';
 import { SortableList } from '../dnd/sortable-list';
 import { InlineEdit } from '../ui/inline-edit';
 import { verticalListSortingStrategy } from '@dnd-kit/sortable';
@@ -11,16 +12,19 @@ import { verticalListSortingStrategy } from '@dnd-kit/sortable';
 interface EditableExperienceProps {
     experience: PortfolioData['experience'];
     sectionTitle?: string;
+    hidden?: boolean;
 }
 
 export const EditableExperience = (props: EditableExperienceProps) => {
     const { connectors: { connect, drag }, actions: { setProp }, id } = useNode();
+    const { deleteItem, isDeleting } = useDeleteItem();
     const { enabled, actions: editorActions, query } = useEditor((state: any, query) => ({
         enabled: state.options.enabled,
         query
     }));
     const experience = props.experience || [];
     const sectionTitle = props.sectionTitle;
+    const isHidden = props.hidden;
 
     const handleTitleChange = (newTitle: string) => {
         setProp((props: any) => {
@@ -28,10 +32,17 @@ export const EditableExperience = (props: EditableExperienceProps) => {
         });
     };
 
-    const handleDeleteSection = () => {
-        if (confirm('Delete this entire Experience section? (Your data will be kept and can be re-added from the toolbox)')) {
+    const handleDeleteSection = async () => {
+        const success = await deleteItem('experience');
+        if (success) {
             editorActions.delete(id);
         }
+    };
+
+    const toggleSectionVisibility = () => {
+        setProp((props: any) => {
+            props.hidden = !props.hidden;
+        });
     };
 
     const handleMoveUp = () => {
@@ -76,9 +87,19 @@ export const EditableExperience = (props: EditableExperienceProps) => {
         });
     };
 
-    const handleDelete = (index: number) => {
+    const handleDelete = async (index: number, itemId: string) => {
+        const success = await deleteItem('experience', itemId);
+        if (success) {
+            setProp((props: any) => {
+                props.experience.splice(index, 1);
+            });
+        }
+    };
+
+    const toggleHide = (index: number) => {
         setProp((props: any) => {
-            props.experience.splice(index, 1);
+            const item = props.experience[index];
+            item.hidden = !item.hidden;
         });
     };
 
@@ -123,6 +144,13 @@ export const EditableExperience = (props: EditableExperienceProps) => {
                         <ChevronDown size={16} />
                     </button>
                     <button
+                        onClick={toggleSectionVisibility}
+                        className="bg-gray-800 hover:bg-gray-700 text-white p-2 rounded transition-colors"
+                        title={isHidden ? "Show Section" : "Hide Section"}
+                    >
+                        {isHidden ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                    <button
                         onClick={handleDeleteSection}
                         className="bg-red-500/80 hover:bg-red-500 text-white p-2 rounded transition-colors"
                         title="Delete Section"
@@ -132,7 +160,7 @@ export const EditableExperience = (props: EditableExperienceProps) => {
                 </div>
             )}
 
-            <section id="experience" className="py-20 relative bg-[#050505]">
+            <section id="experience" className={`py-20 relative bg-[#050505] ${isHidden ? 'opacity-50 grayscale' : ''}`}>
                 <div className="container mx-auto px-4">
                     <div className="flex items-center gap-4 mb-16">
                         <div className="h-px bg-gray-700 flex-1" />
@@ -143,6 +171,7 @@ export const EditableExperience = (props: EditableExperienceProps) => {
                                 placeholder="Section Title"
                                 className="text-center"
                             />
+                            {isHidden && <span className="ml-4 text-sm bg-gray-800 text-gray-400 px-2 py-1 rounded">Hidden from Public</span>}
                         </h2>
                         <div className="h-px bg-gray-700 flex-1" />
                     </div>
@@ -160,27 +189,38 @@ export const EditableExperience = (props: EditableExperienceProps) => {
 
                                         {/* Content Side */}
                                         <div className={`md:w-1/2 ${index % 2 === 0 ? 'md:pl-12' : 'md:pr-12 text-right'} relative`}>
-                                            <div className="p-6 rounded-xl bg-white/5 border border-white/10 hover:border-neon-blue/30 transition-all hover:bg-white/[0.07] group/card">
-                                                {/* Delete Button */}
+                                            <div className={`p-6 rounded-xl bg-white/5 border border-white/10 hover:border-neon-blue/30 transition-all hover:bg-white/[0.07] group/card ${job.hidden ? 'opacity-50 grayscale' : ''}`}>
+                                                {/* Controls */}
                                                 {!isOverlay && enabled && (
-                                                    <button
-                                                        onClick={(e) => { e.stopPropagation(); handleDelete(index); }}
-                                                        className="absolute top-2 right-2 text-red-500/0 group-hover/card:text-red-500/100 transition-all p-1 hover:bg-red-500/10 rounded"
-                                                    >
-                                                        <Trash2 size={16} />
-                                                    </button>
+                                                    <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover/card:opacity-100 transition-opacity">
+                                                        <button
+                                                            onClick={(e) => { e.stopPropagation(); toggleHide(index); }}
+                                                            className="text-gray-400 hover:text-white p-1 rounded hover:bg-white/10"
+                                                            title={job.hidden ? "Show" : "Hide"}
+                                                        >
+                                                            {job.hidden ? <EyeOff size={16} /> : <Eye size={16} />}
+                                                        </button>
+                                                        <button
+                                                            onClick={(e) => { e.stopPropagation(); handleDelete(index, job.id); }}
+                                                            className="text-red-500/70 hover:text-red-500 p-1 rounded hover:bg-red-500/10"
+                                                            title="Delete Permanently"
+                                                        >
+                                                            <Trash2 size={16} />
+                                                        </button>
+                                                    </div>
                                                 )}
 
                                                 <div className="space-y-4">
                                                     {/* Role & Company */}
                                                     <div>
-                                                        <h3 className="text-xl font-bold text-white mb-1">
+                                                        <h3 className="text-xl font-bold text-white mb-1 flex items-center gap-2">
                                                             <InlineEdit
                                                                 value={job.role}
                                                                 onChange={(v) => handleUpdate(index, 'role', v)}
                                                                 placeholder="Role Title"
                                                                 className="text-white"
                                                             />
+                                                            {job.hidden && <span className="text-xs bg-red-500/20 text-red-400 px-2 py-0.5 rounded border border-red-500/30">HIDDEN</span>}
                                                         </h3>
                                                         <div className="text-neon-blue font-medium flex items-center gap-2 justify-end md:justify-start">
                                                             <Building2 size={16} />

@@ -3,7 +3,7 @@ import React, { useMemo, useRef, useEffect, useState } from 'react';
 import { useNode, useEditor } from '@craftjs/core';
 import { PortfolioData } from '@/types/portfolio';
 import { COMPONENT_NAMES } from '@/lib/editor-utils';
-import { Plus, X, Trash2, ChevronUp, ChevronDown } from 'lucide-react';
+import { Plus, X, Trash2, ChevronUp, ChevronDown, Eye, EyeOff } from 'lucide-react';
 import { SortableList } from '../dnd/sortable-list';
 import { InlineEdit } from '../ui/inline-edit';
 import { rectSortingStrategy } from '@dnd-kit/sortable';
@@ -16,6 +16,7 @@ const generateId = () => Math.random().toString(36).substr(2, 9);
 interface EditableSkillsProps {
     skills: PortfolioData['skills'];
     sectionTitle?: string;
+    hidden?: boolean;
 }
 
 export const EditableSkills = (props: EditableSkillsProps) => {
@@ -26,6 +27,19 @@ export const EditableSkills = (props: EditableSkillsProps) => {
     }));
     const skills = props.skills || [];
     const sectionTitle = props.sectionTitle;
+    const isHidden = props.hidden;
+
+    const toggleSectionVisibility = () => {
+        setProp((props: any) => {
+            props.hidden = !props.hidden;
+        });
+    };
+
+    const toggleCategoryVisibility = (index: number) => {
+        setProp((props: any) => {
+            props.skills[index].hidden = !props.skills[index].hidden;
+        });
+    };
 
     const handleTitleChange = (newTitle: string) => {
         setProp((props: any) => {
@@ -257,6 +271,9 @@ export const EditableSkills = (props: EditableSkillsProps) => {
                     >
                         <Trash2 size={16} />
                     </button>
+                    <button onClick={toggleSectionVisibility} className="bg-blue-500/80 hover:bg-blue-500 text-white p-2 rounded transition-colors" title={isHidden ? "Show Section" : "Hide Section"}>
+                        {isHidden ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
                 </div>
             )}
 
@@ -264,13 +281,14 @@ export const EditableSkills = (props: EditableSkillsProps) => {
                 <div className="container mx-auto px-4">
                     <div className="flex items-center gap-4 mb-16">
                         <div className="h-px bg-gray-700 flex-1" />
-                        <h2 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-neon-blue to-neon-green">
+                        <h2 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-neon-blue to-neon-green flex items-center justify-center gap-4">
                             <InlineEdit
                                 value={sectionTitle || "Technical Skills"}
                                 onChange={handleTitleChange}
                                 placeholder="Section Title"
                                 className="text-center"
                             />
+                            {isHidden && <span className="text-sm bg-gray-800 text-gray-400 px-2 py-1 rounded border border-gray-700">Hidden from Public</span>}
                         </h2>
                         <div className="h-px bg-gray-700 flex-1" />
                     </div>
@@ -282,22 +300,32 @@ export const EditableSkills = (props: EditableSkillsProps) => {
                         className={`grid grid-cols-1 md:grid-cols-2 ${getDynamicGridClass(categoriesWithIds.length, 2)} gap-6 max-w-5xl mx-auto`}
                         disabled={!enabled}
                         renderItem={(cat, index, isOverlay) => (
-                            <div className={`h-full p-6 rounded-xl bg-gradient-to-br from-white/5 to-white/0 border border-white/10 ${isOverlay ? 'shadow-2xl scale-105 bg-gray-900 z-50' : (enabled ? 'hover:border-neon-blue/30 transition-colors' : '')}`}>
+                            <div className={`h-full p-6 rounded-xl bg-gradient-to-br from-white/5 to-white/0 border border-white/10 ${isOverlay ? 'shadow-2xl scale-105 bg-gray-900 z-50' : (enabled ? 'hover:border-neon-blue/30 transition-colors' : '')} ${cat.hidden ? 'opacity-50 grayscale' : ''}`}>
                                 <div className="flex justify-between items-start mb-4 group/cat-header">
-                                    <h3 className="text-xl font-bold text-neon-blue flex-1">
+                                    <h3 className="text-xl font-bold text-neon-blue flex-1 flex items-center gap-2">
                                         <InlineEdit
                                             value={cat.category}
                                             onChange={(val) => handleUpdateCategory(index, val)}
                                             className="font-bold"
                                         />
+                                        {cat.hidden && <span className="text-xs bg-red-500/20 text-red-400 px-2 py-0.5 rounded border border-red-500/30">HIDDEN</span>}
                                     </h3>
                                     {!isOverlay && enabled && (
-                                        <button
-                                            onClick={(e) => { e.stopPropagation(); handleDeleteCategory(index); }}
-                                            className="ml-2 text-red-500/50 hover:text-red-500 opacity-0 group-hover/cat-header:opacity-100 transition-opacity"
-                                        >
-                                            <Trash2 size={16} />
-                                        </button>
+                                        <div className="flex items-center">
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); toggleCategoryVisibility(index); }}
+                                                className="ml-2 text-gray-400 hover:text-white opacity-0 group-hover/cat-header:opacity-100 transition-opacity p-1 rounded hover:bg-white/10"
+                                                title={cat.hidden ? "Show Category" : "Hide Category"}
+                                            >
+                                                {cat.hidden ? <EyeOff size={16} /> : <Eye size={16} />}
+                                            </button>
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); handleDeleteCategory(index); }}
+                                                className="ml-2 text-red-500/50 hover:text-red-500 opacity-0 group-hover/cat-header:opacity-100 transition-opacity"
+                                            >
+                                                <Trash2 size={16} />
+                                            </button>
+                                        </div>
                                     )}
                                 </div>
 

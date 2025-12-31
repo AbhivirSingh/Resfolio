@@ -56,34 +56,84 @@ export const EditorLayout = ({ initialData, onReview }: EditorLayoutProps) => {
                                                 return <EditableHero key={sectionId} personalInfo={initialData.personalInfo} socialProfiles={initialData.socialProfiles} />;
                                             case 'experience':
                                                 return initialData.experience && initialData.experience.length > 0 &&
-                                                    <EditableExperience key={sectionId} experience={initialData.experience} sectionTitle={initialData.sectionTitles?.experience} />;
+                                                    <EditableExperience
+                                                        key={sectionId}
+                                                        experience={initialData.experience}
+                                                        sectionTitle={initialData.sectionTitles?.experience}
+                                                        hidden={initialData.sectionVisibility?.experience}
+                                                    />;
                                             case 'skills':
                                                 return initialData.skills && initialData.skills.length > 0 &&
-                                                    <EditableSkills key={sectionId} skills={initialData.skills} sectionTitle={initialData.sectionTitles?.skills} />;
+                                                    <EditableSkills
+                                                        key={sectionId}
+                                                        skills={initialData.skills}
+                                                        sectionTitle={initialData.sectionTitles?.skills}
+                                                        hidden={initialData.sectionVisibility?.skills}
+                                                    />;
                                             case 'projects':
                                                 return initialData.projects && initialData.projects.length > 0 &&
-                                                    <EditableProjects key={sectionId} projects={initialData.projects} sectionTitle={initialData.sectionTitles?.projects} />;
+                                                    <EditableProjects
+                                                        key={sectionId}
+                                                        projects={initialData.projects}
+                                                        sectionTitle={initialData.sectionTitles?.projects}
+                                                        hidden={initialData.sectionVisibility?.projects}
+                                                    />;
                                             case 'publications':
                                                 return initialData.publications && initialData.publications.length > 0 &&
-                                                    <EditablePublications key={sectionId} publications={initialData.publications} sectionTitle={initialData.sectionTitles?.publications} />;
+                                                    <EditablePublications
+                                                        key={sectionId}
+                                                        publications={initialData.publications}
+                                                        sectionTitle={initialData.sectionTitles?.publications}
+                                                        hidden={initialData.sectionVisibility?.publications}
+                                                    />;
                                             case 'achievements':
                                                 return initialData.achievements && initialData.achievements.length > 0 &&
-                                                    <EditableAchievements key={sectionId} achievements={initialData.achievements} sectionTitle={initialData.sectionTitles?.achievements} />;
+                                                    <EditableAchievements
+                                                        key={sectionId}
+                                                        achievements={initialData.achievements}
+                                                        sectionTitle={initialData.sectionTitles?.achievements}
+                                                        hidden={initialData.sectionVisibility?.achievements}
+                                                    />;
                                             case 'certifications':
                                                 return initialData.certifications && initialData.certifications.length > 0 &&
-                                                    <EditableCertifications key={sectionId} certifications={initialData.certifications} sectionTitle={initialData.sectionTitles?.certifications} />;
+                                                    <EditableCertifications
+                                                        key={sectionId}
+                                                        certifications={initialData.certifications}
+                                                        sectionTitle={initialData.sectionTitles?.certifications}
+                                                        hidden={initialData.sectionVisibility?.certifications}
+                                                    />;
                                             case 'education':
                                                 return initialData.education && initialData.education.length > 0 &&
-                                                    <EditableEducation key={sectionId} education={initialData.education} sectionTitle={initialData.sectionTitles?.education} />;
+                                                    <EditableEducation
+                                                        key={sectionId}
+                                                        education={initialData.education}
+                                                        sectionTitle={initialData.sectionTitles?.education}
+                                                        hidden={initialData.sectionVisibility?.education}
+                                                    />;
                                             case 'extracurricular':
                                                 return initialData.extracurricular && initialData.extracurricular.length > 0 &&
-                                                    <EditableExtracurricular key={sectionId} extracurricular={initialData.extracurricular} sectionTitle={initialData.sectionTitles?.extracurricular} />;
+                                                    <EditableExtracurricular
+                                                        key={sectionId}
+                                                        extracurricular={initialData.extracurricular}
+                                                        sectionTitle={initialData.sectionTitles?.extracurricular}
+                                                        hidden={initialData.sectionVisibility?.extracurricular}
+                                                    />;
                                             case 'coursework':
                                                 return initialData.coursework && initialData.coursework.length > 0 &&
-                                                    <EditableCoursework key={sectionId} coursework={initialData.coursework} sectionTitle={initialData.sectionTitles?.coursework} />;
+                                                    <EditableCoursework
+                                                        key={sectionId}
+                                                        coursework={initialData.coursework}
+                                                        sectionTitle={initialData.sectionTitles?.coursework}
+                                                        hidden={initialData.sectionVisibility?.coursework}
+                                                    />;
                                             case 'customSections':
                                                 return initialData.customSections && initialData.customSections.length > 0 &&
-                                                    <EditableCustomSections key={sectionId} customSections={initialData.customSections} />;
+                                                    <EditableCustomSections
+                                                        key={sectionId}
+                                                        customSections={initialData.customSections}
+                                                        sectionTitle={initialData.sectionTitles?.customSections} // Note: sectionTitles might not have customSections key in some types, but check PortfolioData interface.
+                                                        hidden={initialData.sectionVisibility?.customSections}
+                                                    />;
                                             default:
                                                 return null;
                                         }
