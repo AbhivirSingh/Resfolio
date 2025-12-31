@@ -25,6 +25,7 @@ export default function VisualEditorPage() {
     const [newData, setNewData] = useState<PortfolioData | null>(null);
     const [isReviewOpen, setIsReviewOpen] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
+    const [editorKey, setEditorKey] = useState(0); // Force remount when data changes
     const router = useRouter();
 
     useEffect(() => {
@@ -62,10 +63,17 @@ export default function VisualEditorPage() {
 
             if (!res.ok) throw new Error("Update failed");
 
+            // Fetch the latest data from the database to sync state
+            const freshRes = await fetch("/api/update-portfolio");
+            if (freshRes.ok) {
+                const freshData = await freshRes.json();
+                setInitialData(freshData); // Update the editor's base data
+                setEditorKey(prev => prev + 1); // Force editor to remount with fresh data
+            }
+
             // Success
             setIsReviewOpen(false);
             router.refresh();
-            // Optional: navigate back or show success toast
             alert("Saved successfully!");
         } catch (error) {
             console.error("Save error:", error);
@@ -89,6 +97,7 @@ export default function VisualEditorPage() {
     return (
         <div className="h-screen w-full">
             <Editor
+                key={editorKey}
                 resolver={{
                     Container,
                     ContainerSettings,

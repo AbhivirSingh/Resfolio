@@ -49,17 +49,61 @@ export const EditorLayout = ({ initialData, onReview }: EditorLayoutProps) => {
                     <div className="w-full h-full min-h-screen bg-[#050505] shadow-2xl overflow-y-auto font-outfit text-white selection:bg-neon-blue selection:text-black"> {/* Full screen black bg for Modern Theme */}
                         <Frame>
                             <Element is={Container} canvas className="min-h-full pb-20">
-                                <EditableHero personalInfo={initialData.personalInfo} socialProfiles={initialData.socialProfiles} />
-                                {initialData.experience && initialData.experience.length > 0 && <EditableExperience experience={initialData.experience} sectionTitle={initialData.sectionTitles?.experience} />}
-                                {initialData.skills && initialData.skills.length > 0 && <EditableSkills skills={initialData.skills} sectionTitle={initialData.sectionTitles?.skills} />}
-                                {initialData.projects && initialData.projects.length > 0 && <EditableProjects projects={initialData.projects} sectionTitle={initialData.sectionTitles?.projects} />}
-                                {initialData.publications && initialData.publications.length > 0 && <EditablePublications publications={initialData.publications} sectionTitle={initialData.sectionTitles?.publications} />}
-                                {initialData.achievements && initialData.achievements.length > 0 && <EditableAchievements achievements={initialData.achievements} sectionTitle={initialData.sectionTitles?.achievements} />}
-                                {initialData.certifications && initialData.certifications.length > 0 && <EditableCertifications certifications={initialData.certifications} sectionTitle={initialData.sectionTitles?.certifications} />}
-                                {initialData.education && initialData.education.length > 0 && <EditableEducation education={initialData.education} sectionTitle={initialData.sectionTitles?.education} />}
-                                {initialData.extracurricular && initialData.extracurricular.length > 0 && <EditableExtracurricular extracurricular={initialData.extracurricular} sectionTitle={initialData.sectionTitles?.extracurricular} />}
-                                {initialData.coursework && initialData.coursework.length > 0 && <EditableCoursework coursework={initialData.coursework} sectionTitle={initialData.sectionTitles?.coursework} />}
-                                {initialData.customSections && initialData.customSections.length > 0 && <EditableCustomSections customSections={initialData.customSections} />}
+                                {initialData.sectionOrder ? (
+                                    initialData.sectionOrder.map((sectionId) => {
+                                        switch (sectionId) {
+                                            case 'hero':
+                                                return <EditableHero key={sectionId} personalInfo={initialData.personalInfo} socialProfiles={initialData.socialProfiles} />;
+                                            case 'experience':
+                                                return initialData.experience && initialData.experience.length > 0 &&
+                                                    <EditableExperience key={sectionId} experience={initialData.experience} sectionTitle={initialData.sectionTitles?.experience} />;
+                                            case 'skills':
+                                                return initialData.skills && initialData.skills.length > 0 &&
+                                                    <EditableSkills key={sectionId} skills={initialData.skills} sectionTitle={initialData.sectionTitles?.skills} />;
+                                            case 'projects':
+                                                return initialData.projects && initialData.projects.length > 0 &&
+                                                    <EditableProjects key={sectionId} projects={initialData.projects} sectionTitle={initialData.sectionTitles?.projects} />;
+                                            case 'publications':
+                                                return initialData.publications && initialData.publications.length > 0 &&
+                                                    <EditablePublications key={sectionId} publications={initialData.publications} sectionTitle={initialData.sectionTitles?.publications} />;
+                                            case 'achievements':
+                                                return initialData.achievements && initialData.achievements.length > 0 &&
+                                                    <EditableAchievements key={sectionId} achievements={initialData.achievements} sectionTitle={initialData.sectionTitles?.achievements} />;
+                                            case 'certifications':
+                                                return initialData.certifications && initialData.certifications.length > 0 &&
+                                                    <EditableCertifications key={sectionId} certifications={initialData.certifications} sectionTitle={initialData.sectionTitles?.certifications} />;
+                                            case 'education':
+                                                return initialData.education && initialData.education.length > 0 &&
+                                                    <EditableEducation key={sectionId} education={initialData.education} sectionTitle={initialData.sectionTitles?.education} />;
+                                            case 'extracurricular':
+                                                return initialData.extracurricular && initialData.extracurricular.length > 0 &&
+                                                    <EditableExtracurricular key={sectionId} extracurricular={initialData.extracurricular} sectionTitle={initialData.sectionTitles?.extracurricular} />;
+                                            case 'coursework':
+                                                return initialData.coursework && initialData.coursework.length > 0 &&
+                                                    <EditableCoursework key={sectionId} coursework={initialData.coursework} sectionTitle={initialData.sectionTitles?.coursework} />;
+                                            case 'customSections':
+                                                return initialData.customSections && initialData.customSections.length > 0 &&
+                                                    <EditableCustomSections key={sectionId} customSections={initialData.customSections} />;
+                                            default:
+                                                return null;
+                                        }
+                                    })
+                                ) : (
+                                    // Fallback for older data without sectionOrder
+                                    <>
+                                        <EditableHero personalInfo={initialData.personalInfo} socialProfiles={initialData.socialProfiles} />
+                                        {initialData.experience && initialData.experience.length > 0 && <EditableExperience experience={initialData.experience} sectionTitle={initialData.sectionTitles?.experience} />}
+                                        {initialData.skills && initialData.skills.length > 0 && <EditableSkills skills={initialData.skills} sectionTitle={initialData.sectionTitles?.skills} />}
+                                        {initialData.projects && initialData.projects.length > 0 && <EditableProjects projects={initialData.projects} sectionTitle={initialData.sectionTitles?.projects} />}
+                                        {initialData.publications && initialData.publications.length > 0 && <EditablePublications publications={initialData.publications} sectionTitle={initialData.sectionTitles?.publications} />}
+                                        {initialData.achievements && initialData.achievements.length > 0 && <EditableAchievements achievements={initialData.achievements} sectionTitle={initialData.sectionTitles?.achievements} />}
+                                        {initialData.certifications && initialData.certifications.length > 0 && <EditableCertifications certifications={initialData.certifications} sectionTitle={initialData.sectionTitles?.certifications} />}
+                                        {initialData.education && initialData.education.length > 0 && <EditableEducation education={initialData.education} sectionTitle={initialData.sectionTitles?.education} />}
+                                        {initialData.extracurricular && initialData.extracurricular.length > 0 && <EditableExtracurricular extracurricular={initialData.extracurricular} sectionTitle={initialData.sectionTitles?.extracurricular} />}
+                                        {initialData.coursework && initialData.coursework.length > 0 && <EditableCoursework coursework={initialData.coursework} sectionTitle={initialData.sectionTitles?.coursework} />}
+                                        {initialData.customSections && initialData.customSections.length > 0 && <EditableCustomSections customSections={initialData.customSections} />}
+                                    </>
+                                )}
                             </Element>
                         </Frame>
                     </div>
