@@ -3,9 +3,9 @@ import React from 'react';
 import { useEditor } from '@craftjs/core';
 import { PortfolioData } from '@/types/portfolio';
 import { reconstructPortfolioData } from '@/lib/editor-utils';
-import { ArrowLeft, Save, Eye, Edit2, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Save } from 'lucide-react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+
 
 interface TopbarProps {
     initialData: PortfolioData;
@@ -14,7 +14,7 @@ interface TopbarProps {
 
 export const Topbar = ({ initialData, onReview }: TopbarProps) => {
     const { query, actions } = useEditor();
-    const router = useRouter();
+
 
     const handleSave = () => {
         const serialized = query.serialize();
@@ -38,19 +38,6 @@ export const Topbar = ({ initialData, onReview }: TopbarProps) => {
             </div>
 
             <div className="flex items-center gap-3">
-
-
-                <div className="h-6 w-px bg-gray-300 mx-1" />
-
-                <a
-                    href={`/portfolio/${initialData.personalInfo.name.toLowerCase().replace(/\s+/g, '-')}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 flex items-center gap-2"
-                >
-                    <ExternalLink size={16} />
-                    View Live
-                </a>
                 <button
                     onClick={handleSave}
                     className="px-6 py-2 bg-black text-white text-sm font-bold rounded-full hover:bg-gray-800 transition-colors flex items-center gap-2"

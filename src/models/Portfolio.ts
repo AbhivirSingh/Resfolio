@@ -15,6 +15,7 @@ const PortfolioSchema: Schema = new Schema({
         phone: { type: String, default: "" },
         location: { type: String, default: "" },
         image: { type: String },
+        resume: { type: String },
     },
     socialProfiles: {
         github: String,

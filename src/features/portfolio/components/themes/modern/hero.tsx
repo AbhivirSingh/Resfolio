@@ -1,7 +1,10 @@
-import React from 'react';
+"use client";
+
+import React, { useState } from 'react';
 import TiltCard from '@/components/ui/tilt-card';
-import { Download, Mail, Github, Linkedin } from 'lucide-react';
+import { Download, Mail, Github, Linkedin, Eye } from 'lucide-react';
 import { PortfolioData } from "@/types/portfolio";
+import { ResumeModal } from '@/components/ui/resume-modal';
 
 interface HeroProps {
     personalInfo: PortfolioData["personalInfo"];
@@ -22,8 +25,15 @@ const CustomIcon = ({ path, className }: { path: React.ReactNode; className?: st
 );
 
 const Hero: React.FC<HeroProps> = ({ personalInfo, socialProfiles }) => {
+    const [isResumeOpen, setIsResumeOpen] = useState(false);
+
     return (
         <section className="min-h-screen flex items-center justify-center pt-20 pb-10 px-4 relative overflow-hidden">
+            <ResumeModal
+                isOpen={isResumeOpen}
+                onClose={() => setIsResumeOpen(false)}
+                resumeUrl={personalInfo.resume || null}
+            />
             {/* Background Decor */}
             <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
                 <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-neon-purple/20 rounded-full blur-[120px] animate-pulse-glow" />
@@ -54,15 +64,13 @@ const Hero: React.FC<HeroProps> = ({ personalInfo, socialProfiles }) => {
                             <Mail className="w-5 h-5" />
                             Contact Me
                         </a>
-                        <a
-                            href="https://drive.google.com/file/d/1BqzP6daV1_Q5ZwGz4p_-XzVPvaKEF2fC/view?usp=sharing"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="group flex items-center gap-2 px-6 py-3 bg-transparent border border-white/30 text-white rounded-full font-bold hover:bg-white/10 transition-colors"
+                        <button
+                            onClick={() => setIsResumeOpen(true)}
+                            className="group flex items-center gap-2 px-6 py-3 bg-transparent border border-white/30 text-white rounded-full font-bold hover:bg-white/10 transition-colors cursor-pointer"
                         >
-                            <Download className="w-5 h-5 group-hover:translate-y-1 transition-transform" />
-                            Download Resume
-                        </a>
+                            <Eye className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                            View Resume
+                        </button>
                     </div>
 
                     <div className="flex gap-6 pt-8 text-gray-400 flex-wrap">
@@ -146,7 +154,7 @@ const Hero: React.FC<HeroProps> = ({ personalInfo, socialProfiles }) => {
 
                             {/* Image Placeholder */}
                             <img
-                                src="profile_photo.jpeg"
+                                src={personalInfo.image || "profile_photo.jpeg"}
                                 alt="profile_photo"
                                 className="relative z-10 w-full h-full object-cover object-center scale-110 translate-y-4 hover:scale-115 transition-transform duration-700 ease-out"
                             />

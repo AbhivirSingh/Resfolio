@@ -7,6 +7,7 @@ import { PortfolioData } from "@/types/portfolio";
 import { COMPONENT_NAMES } from '@/lib/editor-utils';
 import { InlineEdit } from '../ui/inline-edit';
 import { LinkPopover } from '../ui/link-popover';
+import { UploadThingButton } from '../../upload/upload-thing-button';
 
 interface EditableHeroProps {
     personalInfo: PortfolioData["personalInfo"];
@@ -104,16 +105,26 @@ export const EditableHero = (props: EditableHeroProps) => {
                                 />
                             </div>
 
-                            <LinkPopover
-                                value={props.personalInfo.resume || ""} // Still keeping this even though not in socialProfiles, as it was in the original file
-                                onChange={(v) => handleUpdate('resume' as any, v)} // keeping the cast simply because I haven't fixed the type
-                                placeholder="Resume URL (PDF)"
-                            >
-                                <button className="group flex items-center gap-2 px-6 py-3 bg-transparent border border-white/30 text-white rounded-full font-bold hover:bg-white/10 transition-colors pointer-events-none">
+                            {enabled ? (
+                                <div className="flex items-center">
+                                    <UploadThingButton
+                                        endpoint="resumePdf"
+                                        field="personalInfo.resume"
+                                        onUploadComplete={(url) => handleUpdate('resume' as any, url)}
+                                        customClass="group flex items-center gap-2 px-6 py-3 bg-transparent border border-white/30 text-white rounded-full font-bold hover:bg-white/10 transition-colors cursor-pointer"
+                                    />
+                                </div>
+                            ) : (
+                                <a
+                                    href={personalInfo.resume || "#"}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className={`group flex items-center gap-2 px-6 py-3 bg-transparent border border-white/30 text-white rounded-full font-bold hover:bg-white/10 transition-colors ${!personalInfo.resume ? 'opacity-50 pointer-events-none' : ''}`}
+                                >
                                     <Download className="w-5 h-5" />
                                     Download Resume
-                                </button>
-                            </LinkPopover>
+                                </a>
+                            )}
                         </div>
 
                         <div className="flex gap-6 pt-8 text-gray-400 flex-wrap">
@@ -171,7 +182,7 @@ export const EditableHero = (props: EditableHeroProps) => {
 
                     {/* 3D Visual */}
                     <div className="relative z-10 flex justify-center order-1 lg:order-2">
-                        <TiltCard className="w-[300px] h-[400px] md:w-[350px] md:h-[450px]" scale={1.1}>
+                        <TiltCard className="w-[300px] h-[400px] md:w-[350px] md:h-[450px]" scale={1.1} disabled>
                             <div className="relative h-full w-full flex flex-col items-center justify-end pb-0 overflow-hidden">
                                 <img
                                     src={personalInfo.image || "profile_photo.jpeg"}
@@ -180,13 +191,12 @@ export const EditableHero = (props: EditableHeroProps) => {
                                 />
                                 {/* Image URL Edit Overlay */}
                                 {enabled && (
-                                    <div className="absolute bottom-0 w-full bg-black/80 p-2 opacity-0 group-hover:opacity-100 transition-opacity z-20">
-                                        <p className="text-xs text-gray-400 mb-1">Image URL:</p>
-                                        <InlineEdit
-                                            value={personalInfo.image || ""}
-                                            onChange={(v) => handleUpdate('image', v)}
-                                            className="text-xs text-white break-all"
-                                            placeholder="https://..."
+                                    <div className="absolute bottom-0 w-full bg-black/80 p-2 z-20 flex flex-col items-center">
+                                        <p className="text-xs text-gray-400 mb-1">Upload Photo</p>
+                                        <UploadThingButton
+                                            endpoint="profileImage"
+                                            field="personalInfo.image"
+                                            onUploadComplete={(url) => handleUpdate('image', url)}
                                         />
                                     </div>
                                 )}

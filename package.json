@@ -15,6 +15,7 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@google/generative-ai": "^0.24.1",
     "@types/lodash": "^4.17.21",
+    "@uploadthing/react": "^7.3.3",
     "clsx": "^2.1.1",
     "framer-motion": "^12.23.24",
     "lodash": "^4.17.21",
@@ -32,6 +33,7 @@
     "react-dom": "19.2.0",
     "server-only": "^0.0.1",
     "tailwind-merge": "^3.4.0",
+    "uploadthing": "^7.7.4",
     "use-debounce": "^10.0.6"
   },
   "devDependencies": {
