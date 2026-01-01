@@ -2,7 +2,7 @@ import React from 'react';
 import TiltCard from '@/components/ui/tilt-card';
 import { RevealOnScroll } from '@/components/ui/reveal-on-scroll';
 import { Zap, Heart, Users } from 'lucide-react';
-import { getDynamicGridClass } from '@/lib/utils';
+import { getDynamicGridClass } from '@/core/utils';
 import { ExtracurricularSectionProps } from '@/types/portfolio';
 
 const ExtracurricularSection: React.FC<ExtracurricularSectionProps & { sectionTitle?: string }> = ({ extracurricular, sectionTitle }) => {

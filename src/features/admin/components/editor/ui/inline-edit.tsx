@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { cn } from '@/lib/utils';
+import { cn } from '@/core/utils';
 import { useEditor } from '@craftjs/core';
 
 interface InlineEditProps {

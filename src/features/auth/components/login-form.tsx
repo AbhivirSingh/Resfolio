@@ -3,11 +3,11 @@
 import { useState } from "react";
 import { Lock, AlertCircle } from "lucide-react";
 
-interface LoginProps {
+interface LoginFormProps {
     onLogin: () => void;
 }
 
-export function Login({ onLogin }: LoginProps) {
+export function LoginForm({ onLogin }: LoginFormProps) {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");

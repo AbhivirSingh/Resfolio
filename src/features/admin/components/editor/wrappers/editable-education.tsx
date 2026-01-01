@@ -2,7 +2,7 @@
 import React, { useMemo } from 'react';
 import { useNode, useEditor } from '@craftjs/core';
 import { PortfolioData } from '@/types/portfolio';
-import { COMPONENT_NAMES } from '@/lib/editor-utils';
+import { COMPONENT_NAMES } from '@/features/admin/utils/helpers';
 import { Trash2, Plus, GraduationCap, Calendar, Award, ChevronUp, ChevronDown, Eye, EyeOff } from 'lucide-react';
 import { SortableList } from '../dnd/sortable-list';
 import { InlineEdit } from '../ui/inline-edit';
@@ -41,9 +41,7 @@ export const EditableEducation = (props: EditableEducationProps) => {
     };
 
     const handleDeleteSection = () => {
-        if (confirm('Delete this entire Education section? (Your data will be kept and can be re-added from the toolbox)')) {
-            editorActions.delete(id);
-        }
+        editorActions.delete(id);
     };
 
     const handleMoveUp = () => {

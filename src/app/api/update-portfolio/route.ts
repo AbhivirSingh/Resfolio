@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
-import { savePortfolioData } from "@/lib/data";
+import { savePortfolioData } from "@/features/portfolio/server/data";
 import { PortfolioData } from "@/types/portfolio";
 
 // Force Node.js runtime
@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
 
 export async function GET() {
     try {
-        const { getPortfolioData } = await import("@/lib/data");
+        const { getPortfolioData } = await import("@/features/portfolio/server/data");
         const data = await getPortfolioData();
         return NextResponse.json(data);
     } catch (error) {

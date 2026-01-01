@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { PortfolioData } from '@/types/portfolio';
-import { generateChangeLog } from '@/lib/editor-utils';
+import { generateChangeLog } from '@/features/admin/utils/helpers';
 import { AlertTriangle, Check, X } from 'lucide-react';
 
 interface ChangeLogModalProps {

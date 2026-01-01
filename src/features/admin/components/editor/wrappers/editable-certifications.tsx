@@ -2,7 +2,7 @@
 import React, { useMemo } from 'react';
 import { useNode, useEditor } from '@craftjs/core';
 import { PortfolioData } from '@/types/portfolio';
-import { COMPONENT_NAMES } from '@/lib/editor-utils';
+import { COMPONENT_NAMES } from '@/features/admin/utils/helpers';
 import { Trash2, Plus, Award, ChevronUp, ChevronDown, Eye, EyeOff } from 'lucide-react';
 import { SortableList } from '../dnd/sortable-list';
 import { InlineEdit } from '../ui/inline-edit';
@@ -33,9 +33,28 @@ export const EditableCertifications = (props: EditableCertificationsProps) => {
         });
     };
     const handleTitleChange = (newTitle: string) => setProp((props: any) => props.sectionTitle = newTitle);
-    const handleDeleteSection = () => { if (confirm('Delete this entire Certifications section? (Your data will be kept and can be re-added from the toolbox)')) editorActions.delete(id); };
-    const handleMoveUp = () => { const parent = query.node(id).get().data.parent; if (!parent) return; const parentNode = query.node(parent).get(); const childNodes = parentNode.data.nodes || []; const currentIndex = childNodes.indexOf(id); if (currentIndex > 0) editorActions.move(id, parent, currentIndex - 1); };
-    const handleMoveDown = () => { const parent = query.node(id).get().data.parent; if (!parent) return; const parentNode = query.node(parent).get(); const childNodes = parentNode.data.nodes || []; const currentIndex = childNodes.indexOf(id); if (currentIndex < childNodes.length - 1) editorActions.move(id, parent, currentIndex + 2); };  // +2 because node is temporarily removed
+    const handleDeleteSection = () => { editorActions.delete(id); };
+    const handleMoveUp = () => {
+        const parentId = query.node(id).get().data.parent;
+        if (!parentId) return;
+
+        const parentNode = query.node(parentId).get();
+        const childNodes = parentNode.data.nodes || [];
+        const index = childNodes.indexOf(id);
+
+        if (index > 0) editorActions.move(id, parentId, index - 1);
+    };
+
+    const handleMoveDown = () => {
+        const parentId = query.node(id).get().data.parent;
+        if (!parentId) return;
+
+        const parentNode = query.node(parentId).get();
+        const childNodes = parentNode.data.nodes || [];
+        const index = childNodes.indexOf(id);
+
+        if (index < childNodes.length - 1) editorActions.move(id, parentId, index + 2); // +2 for removal offset
+    };
 
     const itemsWithIds = useMemo(() => {
         return certifications.map((item, index) => ({

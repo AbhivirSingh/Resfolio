@@ -2,12 +2,12 @@
 import React, { useMemo, useRef, useEffect, useState } from 'react';
 import { useNode, useEditor } from '@craftjs/core';
 import { PortfolioData } from '@/types/portfolio';
-import { COMPONENT_NAMES } from '@/lib/editor-utils';
+import { COMPONENT_NAMES } from '@/features/admin/utils/helpers';
 import { Plus, X, Trash2, ChevronUp, ChevronDown, Eye, EyeOff } from 'lucide-react';
 import { SortableList } from '../dnd/sortable-list';
 import { InlineEdit } from '../ui/inline-edit';
 import { rectSortingStrategy } from '@dnd-kit/sortable';
-import { getDynamicGridClass } from '@/lib/utils';
+import { getDynamicGridClass } from '@/core/utils';
 import { RevealOnScroll } from '@/components/ui/reveal-on-scroll';
 
 // --- Utils for ID generation ---
@@ -48,9 +48,7 @@ export const EditableSkills = (props: EditableSkillsProps) => {
     };
 
     const handleDeleteSection = () => {
-        if (confirm('Delete this entire Skills section? (Your data will be kept and can be re-added from the toolbox)')) {
-            editorActions.delete(id);
-        }
+        editorActions.delete(id);
     };
 
     const handleMoveUp = () => {

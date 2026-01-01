@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
-import dbConnect from "@/lib/db";
+import dbConnect from "@/core/db";
 import Portfolio from "@/models/Portfolio";
 
 // Force Node.js runtime

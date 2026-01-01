@@ -6,8 +6,8 @@ import { Upload, FileText, CheckCircle, AlertCircle, Eye, Save } from "lucide-re
 import { ThemeSwitcher } from "@/features/portfolio/components/theme-switcher";
 import { PortfolioData } from "@/types/portfolio";
 import { ResumeReview } from "@/features/admin/components/resume-review/resume-review-container";
-import { Login } from "@/features/auth/components/login-form";
-import { mergePortfolioData } from "@/lib/merge";
+import { LoginForm } from "@/features/auth/components/login-form";
+import { mergePortfolioData } from "@/features/admin/utils/merge";
 import { EditButton } from "@/features/admin/components/edit-button";
 
 type Step = "upload" | "review" | "success";
@@ -235,7 +235,7 @@ export default function AdminPage() {
     if (!isAuthenticated) {
         return (
             <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-                <Login onLogin={() => setIsAuthenticated(true)} />
+                <LoginForm onLogin={() => setIsAuthenticated(true)} />
             </div>
         );
     }

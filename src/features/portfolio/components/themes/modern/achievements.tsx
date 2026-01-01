@@ -3,7 +3,7 @@ import { Trophy } from 'lucide-react';
 import TiltCard from '@/components/ui/tilt-card';
 import { RevealOnScroll } from '@/components/ui/reveal-on-scroll';
 
-import { getDynamicGridClass } from '@/lib/utils';
+import { getDynamicGridClass } from '@/core/utils';
 
 interface AchievementsProps {
     achievements: string[];

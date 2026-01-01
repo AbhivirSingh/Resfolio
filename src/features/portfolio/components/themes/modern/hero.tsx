@@ -154,7 +154,7 @@ const Hero: React.FC<HeroProps> = ({ personalInfo, socialProfiles }) => {
 
                             {/* Image Placeholder */}
                             <img
-                                src={personalInfo.image || "profile_photo.jpeg"}
+                                src={personalInfo.image || "https://placehold.co/400x600/1a1a1a/ffffff?text=No+Image"}
                                 alt="profile_photo"
                                 className="relative z-10 w-full h-full object-cover object-center scale-110 translate-y-4 hover:scale-115 transition-transform duration-700 ease-out"
                             />

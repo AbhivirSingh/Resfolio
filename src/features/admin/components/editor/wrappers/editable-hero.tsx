@@ -4,7 +4,7 @@ import { useNode, useEditor } from '@craftjs/core';
 import TiltCard from '@/components/ui/tilt-card';
 import { Download, Mail, Github, Linkedin } from 'lucide-react';
 import { PortfolioData } from "@/types/portfolio";
-import { COMPONENT_NAMES } from '@/lib/editor-utils';
+import { COMPONENT_NAMES } from '@/features/admin/utils/helpers';
 import { InlineEdit } from '../ui/inline-edit';
 import { LinkPopover } from '../ui/link-popover';
 import { UploadThingButton } from '../../upload/upload-thing-button';
@@ -27,15 +27,12 @@ const CustomIcon = ({ path, className }: { path: React.ReactNode; className?: st
     </svg>
 );
 
-export const EditableHero = (props: EditableHeroProps) => {
+export const EditableHero = ({ personalInfo, socialProfiles }: EditableHeroProps) => {
     const { connectors: { connect, drag }, actions: { setProp } } = useNode();
-    const { enabled } = useEditor((state: any) => ({ enabled: state.options.enabled }));
-    const { personalInfo, socialProfiles } = props;
+    const { enabled } = useEditor((state) => ({ enabled: state.options.enabled }));
 
     const handleUpdate = (field: keyof typeof personalInfo, value: string) => {
-        setProp((props: any) => {
-            props.personalInfo[field] = value;
-        });
+        setProp((props: any) => props.personalInfo[field] = value);
     };
 
     const handleSocialUpdate = (field: keyof NonNullable<PortfolioData["socialProfiles"]>, value: string) => {
@@ -46,7 +43,10 @@ export const EditableHero = (props: EditableHeroProps) => {
     };
 
     return (
-        <div ref={(ref) => { if (ref) connect(drag(ref)); }} className={`relative group min-h-[500px] border border-transparent ${enabled ? 'hover:border-dashed hover:border-blue-500/30' : ''} transition-all`}>
+        <div
+            ref={ref => { if (ref) connect(drag(ref)); }}
+            className={`relative group min-h-[500px] border border-transparent ${enabled ? 'hover:border-dashed hover:border-blue-500/30' : ''} transition-all`}
+        >
             {/* Label */}
             {enabled && (
                 <div className="absolute top-0 left-0 bg-blue-500 text-white text-xs px-2 py-1 opacity-0 group-hover:opacity-100 z-50 pointer-events-none rounded-br">
@@ -110,7 +110,7 @@ export const EditableHero = (props: EditableHeroProps) => {
                                     <UploadThingButton
                                         endpoint="resumePdf"
                                         field="personalInfo.resume"
-                                        onUploadComplete={(url) => handleUpdate('resume' as any, url)}
+                                        onUploadComplete={(url) => handleUpdate('resume', url)}
                                         customClass="group flex items-center gap-2 px-6 py-3 bg-transparent border border-white/30 text-white rounded-full font-bold hover:bg-white/10 transition-colors cursor-pointer"
                                     />
                                 </div>
@@ -185,7 +185,7 @@ export const EditableHero = (props: EditableHeroProps) => {
                         <TiltCard className="w-[300px] h-[400px] md:w-[350px] md:h-[450px]" scale={1.1} disabled>
                             <div className="relative h-full w-full flex flex-col items-center justify-end pb-0 overflow-hidden">
                                 <img
-                                    src={personalInfo.image || "profile_photo.jpeg"}
+                                    src={personalInfo.image || "https://placehold.co/400x600/1a1a1a/ffffff?text=No+Image"}
                                     alt="profile_photo"
                                     className="relative z-10 w-full h-full object-cover object-center scale-110 translate-y-4 hover:scale-115 transition-transform duration-700 ease-out"
                                 />

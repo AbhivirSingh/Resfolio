@@ -1,4 +1,6 @@
 
+'use client';
+
 import React from 'react';
 import { Topbar } from './topbar';
 import { FloatingToolbar } from './ui/floating-toolbar';

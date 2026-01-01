@@ -1,7 +1,7 @@
 import React from 'react';
 import TiltCard from '@/components/ui/tilt-card';
 import { RevealOnScroll } from '@/components/ui/reveal-on-scroll';
-import { getDynamicGridClass } from '@/lib/utils';
+import { getDynamicGridClass } from '@/core/utils';
 import { SkillsSectionProps } from '@/types/portfolio';
 
 const SkillsSection: React.FC<SkillsSectionProps & { sectionTitle?: string }> = ({ skills, sectionTitle }) => {

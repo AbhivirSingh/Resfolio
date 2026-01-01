@@ -2,7 +2,7 @@
 import React, { useMemo } from 'react';
 import { useNode, useEditor } from '@craftjs/core';
 import { PortfolioData } from '@/types/portfolio';
-import { COMPONENT_NAMES } from '@/lib/editor-utils';
+import { COMPONENT_NAMES } from '@/features/admin/utils/helpers';
 import { Trash2, Plus, Code2, ExternalLink, Github, ChevronRight, ChevronUp, ChevronDown, Eye, EyeOff } from 'lucide-react';
 import { useDeleteItem } from '../../../hooks/use-delete-item';
 import { SortableList } from '../dnd/sortable-list';

@@ -2,7 +2,7 @@
 import React from 'react';
 import { useEditor } from '@craftjs/core';
 import { PortfolioData } from '@/types/portfolio';
-import { reconstructPortfolioData } from '@/lib/editor-utils';
+import { reconstructPortfolioData } from '@/features/admin/utils/helpers';
 import { ArrowLeft, Save } from 'lucide-react';
 import Link from 'next/link';
 

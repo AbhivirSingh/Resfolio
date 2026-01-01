@@ -1,5 +1,5 @@
 import "server-only";
-import dbConnect from "@/lib/db";
+import dbConnect from "@/core/db";
 import Portfolio from "@/models/Portfolio";
 import { PortfolioData } from "@/types/portfolio";
 

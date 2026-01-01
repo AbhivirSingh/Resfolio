@@ -1,7 +1,7 @@
 import React from 'react';
 import { PortfolioData } from '@/types/portfolio';
 import { RevealOnScroll } from '@/components/ui/reveal-on-scroll';
-import { getDynamicGridClass } from '@/lib/utils';
+import { getDynamicGridClass } from '@/core/utils';
 
 interface CustomSectionsProps {
     data: PortfolioData['customSections'];

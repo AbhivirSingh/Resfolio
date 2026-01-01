@@ -1,248 +1,188 @@
-# Resfolio: AI-Powered Resume Portfolio Generator
+# Resfolio - Technical Whitepaper
 
-**Resfolio** is a sophisticated, resume-driven portfolio generator that leverages Large Language Models (LLMs) to transform static PDF resumes into dynamic, multi-themed personal websites. Built with **Next.js 16**, it features a robust architecture designed for seamless data extraction, real-time preview, and persistent storage.
-
----
-
-## ✨ Features
-
-### 🤖 AI-Powered Resume Parsing
-- **PDF Text Extraction**: Leverages `pdfjs-dist` to extract raw text from uploaded resumes
-- **Intelligent Structuring**: Uses Perplexity AI (Sonar Pro) to intelligently parse and structure resume data into a comprehensive JSON schema
-- **One-Click Import**: Transform your PDF resume into a fully editable portfolio in seconds
-
-### ✏️ Real-Time Visual Editor
-- **Craft.js Integration**: Built on [@craftjs/core](https://craft.js.org/) for drag-and-drop editing
-- **Live Preview**: See changes instantly as you edit
-- **Component Toolbox**: Drag-and-drop interface for adding sections:
-  - Hero Section (Personal Info)
-  - Experience
-  - Projects
-  - Skills
-  - Education
-  - Certifications
-  - Publications
-  - Achievements
-  - Coursework
-  - Extracurricular Activities
-  - Custom Sections
-
-### 🎯 Inline Editing
-- **Click-to-Edit**: All text fields are directly editable on the canvas
-- **Link Popover**: Edit social profile links (GitHub, LinkedIn, LeetCode, HackerRank, etc.) with a convenient popover interface
-- **Floating Toolbar**: Context-aware toolbar for quick formatting and actions
-- **Auto-Save**: Changes are automatically persisted to MongoDB
-
-### 📋 Section Management
-- **Drag-and-Drop Reordering**: Rearrange sections using [@dnd-kit](https://dndkit.com/)
-- **Custom Section Titles**: Rename default section headers
-- **Add/Remove Sections**: Dynamically add or remove portfolio sections
-- **Persistent Layout**: Section order and titles are saved to the database
-
-### 🎨 Multi-Theme Support
-- **Modern Theme**: Contemporary design with vibrant colors and animations
-- **Minimalist Theme**: Clean, professional layout
-- **Creative Theme**: Bold, artistic presentation
-- **Professional Theme**: Traditional, corporate-friendly design
-- **Theme Switching**: Change themes without losing data
-
-### 💾 Data Persistence
-- **MongoDB Integration**: All portfolio data stored securely
-- **Upsert Operations**: Seamless updates without data duplication
-- **Real-Time Sync**: Changes reflected immediately on the live portfolio
+**Resfolio** is a production-grade, full-stack portfolio builder engineered to generate dynamic, high-performance personal websites from structured user data. It functions as a dual-interface system: a **Server-Side Rendered (SSR) Public View** for SEO and performance, and a **Client-Side SPA Admin Dashboard** for interactive content management.
 
 ---
 
-## 🏗️ Architecture
+## 🏗️ System Architecture
 
-The system follows a modern **Serverless/Edge-ready** architecture using the Next.js App Router. It separates concerns between the interactive frontend, the API layer for processing, and the database for persistence.
+Resfolio employs a decoupled architecture within the Next.js App Router framework, separating the Public Presentation Layer from the Admin Logic Layer while sharing a unified Data Access Layer (DAL).
 
 ```mermaid
 graph TD
-    subgraph "Client Layer"
-        Browser[User Browser]
-        AdminUI[Admin Dashboard]
-        PublicUI[Public Portfolio]
+    User[End User] -->|GET /| CDN[Edge / Next.js Handler]
+    AdminUser[Admin] -->|GET /admin| CDN
+
+    subgraph "Presentation Layer (Public)"
+        PublicPage[Server Component<br/>src/app/page.tsx]
+        ThemeEngine[Theme Registry<br/>Modern/Creative/Minimal]
     end
 
-    subgraph "Application Layer (Next.js)"
-        Router[App Router]
-        API_Parse[API: /parse-resume]
-        API_Update[API: /update-portfolio]
-        Auth[Auth Middleware]
+    subgraph "Admin Layer (Private)"
+        Dashboard[Admin Dashboard]
+        Editor[Visual Editor<br/>@craftjs + @dnd-kit]
+        Reconstructor[Data Rehydration Logic]
     end
 
-    subgraph "Data & Processing"
-        PDF_Engine[PDF.js Engine]
-        DB[(MongoDB Atlas)]
+    subgraph "Backend Layer"
+        API[API Routes<br/>/api/update-portfolio]
+        DAL[Data Access Layer<br/>src/features/portfolio/server]
+        Auth[Authentication<br/>NextAuth.js]
     end
 
-    subgraph "External Services"
-        Perplexity["Perplexity AI (Sonar Pro)"]
+    subgraph "Infrastructure"
+        DB[(MongoDB Container)]
+        FileStore[UploadThing<br/>Object Storage]
     end
 
-    Browser -->|Visits| PublicUI
-    Browser -->|Uploads PDF| AdminUI
+    %% Flows
+    CDN --> PublicPage
+    CDN --> Dashboard
+
+    PublicPage -->|Fetch (RSC)| DAL
+    PublicPage -->|Render| ThemeEngine
+
+    Dashboard --> Editor
+    Editor -->|State Change| Reconstructor
+    Reconstructor -->|JSON Payload| API
+
+    API -->|Validate| DAL
+    DAL -->|Mongoose ODM| DB
     
-    PublicUI -->|Fetches Data| DB
-    AdminUI -->|POST File| API_Parse
-    AdminUI -->|POST JSON| API_Update
-    
-    API_Parse -->|Extract Text| PDF_Engine
-    API_Parse -->|Analyze Text| Perplexity
-    
-    API_Update -->|Upsert Document| DB
+    Editor -->|Direct Upload| FileStore
 ```
 
-### Core Modules
+### Core Components
 
-1.  **Frontend (Client-Side)**:
-    -   **Dynamic Rendering**: The public portfolio (`src/app/page.tsx`) fetches data server-side for SEO optimization.
-    -   **Theme Engine**: A context-based theme switcher (`src/context/ThemeContext`) dynamically loads component sets (Modern, Minimalist, etc.) without page reloads.
-    -   **Admin Dashboard**: A protected route (`/admin`) handling file uploads, JSON review, and manual data overrides.
+1.  **Public Presentation Layer (`src/app/page.tsx`)**:
+    *   **Rendering Strategy**: Utilizes `force-dynamic` Server Side Rendering (SSR) to ensure the portfolio always reflects the latest database state without client-side waterfalls.
+    *   **Data Fetching**: Directly calls `getPortfolioData()` from the DAL, bypassing HTTP APIs for internal requests to maintain type safety and reduce latency.
 
-2.  **Backend (API Routes)**:
-    -   **Resume Parsing Service** (`/api/parse-resume`):
-        -   Receives `multipart/form-data`.
-        -   Uses `pdfjs-dist` (Legacy Build) to extract raw text from PDFs.
-        -   Constructs a prompt for **Perplexity's Sonar Pro** model to structure the text into a strict JSON schema.
-    -   **Data Persistence** (`/api/update-portfolio`):
-        -   Validates and sanitizes the reviewed JSON.
-        -   Performs an *upsert* operation on the MongoDB `Portfolio` collection, ensuring a single source of truth for the user.
+2.  **Admin Logic Layer (`src/features/admin`)**:
+    *   **State Management**: Built on `@craftjs/core` to represent the portfolio as a tree of serializable nodes.
+    *   **Interactivity**: Integrates `@dnd-kit` for complex sortable interfaces (sections, items) and `LinkPopover` for inline metadata editing.
+    *   **Rehydration**: Uses a custom utility to transform the Craft.js node tree back into the strict `PortfolioData` schema before persistence.
 
-3.  **Database (MongoDB)**:
-    -   Uses **Mongoose** for schema validation.
-    -   Stores a monolithic `PortfolioData` object containing nested arrays for Experience, Education, Projects, etc.
+3.  **Data Access Layer (DAL)**:
+    *   Located in `src/features/portfolio/server/data.ts`.
+    *   Acts as the single source of truth for Mongoose interactions, abstracting DB logic from both API routes and React Server Components.
 
 ---
 
-## 🔄 Logic Flow: Resume Parsing & Update
+## 🔄 Sequence Diagrams
 
-The core value proposition of Resfolio is its "Upload-to-Publish" pipeline. The following sequence diagram details the lifecycle of a resume update.
+### 1. Data Persistence Workflow
+
+The following diagram illustrates the lifecycle of a "Save" action triggered within the Admin Dashboard.
 
 ```mermaid
 sequenceDiagram
-    actor User
-    participant Client as Admin UI
-    participant API as Next.js API
-    participant PDF as PDF.js
-    participant LLM as Perplexity AI
+    participant User as Admin User
+    participant Editor as Admin Client (React)
+    participant API as Next.js API (/api/update-portfolio)
+    participant DAL as Data Layer
     participant DB as MongoDB
 
-    User->>Client: Uploads Resume (PDF)
-    Client->>API: POST /api/parse-resume (FormData)
+    Note over User, Editor: User Clicks "Save Changes"
+
+    User->>Editor: Trigger Save
+    
+    rect rgb(240, 248, 255)
+        note right of Editor: Serialization Phase
+        Editor->>Editor: Extract Node Tree State (Craft.js)
+        Editor->>Editor: Map Nodes to PortfolioSchema
+        Editor->>Editor: Validate JSON Structure
+    end
+
+    Editor->>API: POST Payload (PortfolioData)
     activate API
     
-    API->>PDF: Extract Raw Text
-    PDF-->>API: Return String
+    API->>API: Server-Side Validation
     
-    API->>LLM: Send Text + JSON Schema Prompt
-    activate LLM
-    LLM-->>API: Return Structured JSON
-    deactivate LLM
+    API->>DAL: savePortfolioData(data)
+    activate DAL
     
-    API-->>Client: Return JSON for Review
+    DAL->>DB: findOneAndUpdate({ upsert: true })
+    activate DB
+    DB-->>DAL: Document Acknowledgement
+    deactivate DB
+    
+    DAL-->>API: Success Signal
+    deactivate DAL
+
+    Note right of API: Cache Invalidation
+    API->>API: revalidatePath("/")
+    
+    API-->>Editor: 200 OK + Success Message
     deactivate API
-    
-    User->>Client: Edits/Approves Data
-    Client->>API: POST /api/update-portfolio (JSON)
-    activate API
-    
-    API->>DB: findOneAndUpdate({upsert: true})
-    DB-->>API: Success
-    
-    API-->>Client: 200 OK
-    deactivate API
-    
-    Client->>User: Redirect to Live Portfolio
+
+    Editor->>User: Display "Portfolio Saved" Toast
 ```
 
 ---
 
-## 🛠️ Tech Stack
+## 🛠️ Technology Stack & Library Justification
 
-### Core Framework
--   **Next.js 16 (App Router)**: React framework for server-side rendering and API routes.
--   **TypeScript 5**: Strict type safety across the entire stack (Shared `PortfolioData` interfaces).
--   **React 19**: Component-based UI library.
-
-### Styling & UI
--   **Tailwind CSS v4**: Utility-first styling.
--   **Framer Motion**: Complex animations (page transitions, scroll reveals).
--   **Lucide React**: Consistent icon set.
-
-### Editor & Interactivity
--   **Craft.js**: Drag-and-drop page builder framework for React.
--   **@dnd-kit**: Modern drag-and-drop toolkit for section reordering.
--   **Lodash**: Utility library for data manipulation.
--   **use-debounce**: Performance optimization for real-time editing.
-
-### Backend & Data
--   **MongoDB & Mongoose**: NoSQL database for flexible document storage.
--   **Perplexity API**: LLM provider for intelligent text parsing.
--   **PDF.js**: PDF parsing library.
+| Category | Technology | Purpose & Justification |
+| :--- | :--- | :--- |
+| **Framework** | **Next.js 16 (App Router)** | Provides Server Components for performance and Server Actions/API routes for backend logic in a unified codebase. |
+| **Language** | **TypeScript** | Ensures strict type safety across the full stack, specifically for the complex `PortfolioData` interface and Mongoose models. |
+| **Database** | **MongoDB + Mongoose** | chosen for its schema flexibility (handling variable resume sections) and ease of evolving the data model. |
+| **Styling** | **Tailwind CSS v4** | delivering a zero-runtime styling engine with a utility-first approach for rapid UI iteration. |
+| **Visual Editor** | **@craftjs/core** | A headless framework for building page builders. Enables the drag-and-drop implementation for the resume sections. |
+| **Drag & Drop** | **@dnd-kit** | Used alongside Craft.js for granular sorting capabilities within lists (e.g., rearranging skills or experience items). |
+| **PDF Handling** | **pdfjs-dist** | Enables client-side parsing of uploaded resumes to pre-fill portfolio data. |
+| **File Storage** | **UploadThing** | Handles direct upload of profile images and resume PDFs to edge storage. |
 
 ---
 
-## 🚀 Installation & Setup
+## 📂 Module Communication
+
+### Admin to Backend Handshake
+The communication between the visual editor and the backend is critical. Unlike traditional forms, the editor maintains a complex state tree. 
+*   **Transformation**: Before saving, the `editor-utils.ts` module traverses the Craft.js node tree. It extracts props from specific components (e.g., `EditableHero`, `SectionList`) and reconstructs the flat `PortfolioData` JSON object expected by the database.
+*   **Validation**: The API route (`src/app/api/update-portfolio/route.ts`) performs a second pass of validation to ensure essential fields (personalInfo like Name/Email) are present before committing to MongoDB.
+
+### Theme System
+The project implements a **Registry Pattern** for themes.
+*   The `PortfolioApp` component dynamically imports theme components (e.g., `features/portfolio/components/themes/modern`) based on the `theme` field in the data.
+*   This allows for seamless switching between "Modern", "Classic", or "Creative" layouts without altering the underlying data structure.
+
+---
+
+## 🚀 Setup & Installation
 
 ### Prerequisites
--   **Node.js** v18+
--   **MongoDB** (Local or Atlas)
--   **Perplexity API Key** (for parsing features)
+*   Node.js v18+
+*   MongoDB Instance (Local or Atlas)
+*   UploadThing API Keys
 
-### 1. Clone & Install
-```bash
-git clone <repository-url>
-cd Resfolio
-npm install
-```
+### Quick Start
 
-### 2. Environment Configuration
-Create a `.env.local` file in the root directory:
+1.  **Clone & Install**
+    ```bash
+    git clone <repo_url>
+    cd resfolio
+    npm install
+    ```
 
-```bash
-# Database
-MONGODB_URI=mongodb+srv://<user>:<password>@cluster.mongodb.net/resfolio
+2.  **Environment Configuration**
+    Create `.env.local` in the root:
+    ```env
+    MONGODB_URI=mongodb+srv://...
+    NEXTAUTH_SECRET=your_secret
+    UPLOADTHING_SECRET=ut_secret
+    UPLOADTHING_APP_ID=ut_id
+    ```
 
-# AI Service
-PERPLEXITY_API_KEY=pplx-xxxxxxxxxxxxxxxxxxxxxxxxx
+3.  **Run Development Server**
+    ```bash
+    npm run dev
+    ```
+    Access the app at `http://localhost:3000`.
 
-# Authentication (Optional/Future)
-NEXTAUTH_SECRET=your-secret-key
-```
-
-### 3. Run Development Server
-```bash
-npm run dev
-```
-Access the app at `http://localhost:3000`.
-
-### 4. Deploy
-The application is optimized for deployment on **Vercel**.
-```bash
-npm run build
-npm start
-```
-
----
-
-## 📂 Project Structure
-
-```
-src/
-├── app/                    # Next.js App Router
-│   ├── api/                # Backend API Routes
-│   ├── admin/              # Admin Dashboard Page
-│   └── page.tsx            # Main Portfolio Entry
-├── features/               # Feature-based Architecture
-│   ├── admin/              # Admin-specific components (Review Logic)
-│   └── portfolio/          # Portfolio Themes & Components
-│       ├── components/
-│       │   └── themes/     # (Modern, Minimalist, Creative, Professional)
-├── lib/                    # Core Utilities
-│   ├── db.ts               # Database Connection
-│   └── data.ts             # Data Fetching Logic
-├── models/                 # Mongoose Models
-└── types/                  # Shared TypeScript Interfaces
-```
+4.  **Production Build**
+    ```bash
+    npm run build
+    npm start
+    ```

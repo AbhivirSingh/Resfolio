@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
-import { getPortfolioData, savePortfolioData } from "@/lib/data";
+import { getPortfolioData, savePortfolioData } from "@/features/portfolio/server/data";
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';

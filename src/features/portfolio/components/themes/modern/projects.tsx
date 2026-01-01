@@ -3,7 +3,7 @@ import TiltCard from '@/components/ui/tilt-card';
 import { Github, ExternalLink, Code2 } from 'lucide-react';
 import { PortfolioData } from "@/types/portfolio";
 import { RevealOnScroll } from '@/components/ui/reveal-on-scroll';
-import { getDynamicGridClass } from '@/lib/utils';
+import { getDynamicGridClass } from '@/core/utils';
 
 interface ProjectsSectionProps {
   projects: PortfolioData["projects"];

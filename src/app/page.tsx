@@ -1,4 +1,4 @@
-import { getPortfolioData } from "@/lib/data";
+import { getPortfolioData } from "@/features/portfolio/server/data";
 import PortfolioApp from "@/features/portfolio/components/portfolio-app";
 
 // Force dynamic rendering to always fetch fresh data

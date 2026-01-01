@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   title: "Abhivir's Portfolio",
 };
 
-import { getPortfolioData } from "@/lib/data";
+import { getPortfolioData } from "@/features/portfolio/server/data";
 
 export default async function RootLayout({
   children,

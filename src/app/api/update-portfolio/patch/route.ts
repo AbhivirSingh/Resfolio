@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import dbConnect from "@/lib/db";
+import dbConnect from "@/core/db";
 import Portfolio from "@/models/Portfolio";
 
 export async function PATCH(req: NextRequest) {

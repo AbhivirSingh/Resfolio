@@ -18,7 +18,24 @@ export const COMPONENT_NAMES = {
 };
 
 export const reconstructPortfolioData = (nodes: SerializedNodes, originalData: PortfolioData): PortfolioData => {
+    console.log("=== Reconstructing Portfolio Data ===");
+    console.log("Original Order:", originalData.sectionOrder);
     const newData = _.cloneDeep(originalData);
+
+    // Reset all list-based sections to empty arrays.
+    // We rely on the Editor Nodes to be the source of truth.
+    // If a section exists in the editor, its data will be populated in the loop below.
+    // If a section has been deleted from the editor, it will remain empty here, ensuring it is removed from the DB.
+    newData.experience = [];
+    newData.projects = [];
+    newData.skills = [];
+    newData.education = [];
+    newData.certifications = [];
+    newData.publications = [];
+    newData.extracurricular = [];
+    newData.achievements = [];
+    newData.coursework = [];
+    newData.customSections = [];
 
     // Initialize sectionTitles if not exist
     if (!newData.sectionTitles) {
@@ -32,6 +49,14 @@ export const reconstructPortfolioData = (nodes: SerializedNodes, originalData: P
     // Determine section order from the Container node
     // Find the Container node (it usually has displayName "Container")
     const containerNode = Object.values(nodes).find(n => n.displayName === "Container" || (n.type as any).resolvedName === "Container");
+
+    if (containerNode) {
+        console.log("Container Node Found");
+        console.log("Container Children:", containerNode.nodes);
+    } else {
+        console.log("!! WARNING: Container Node NOT Found !!");
+    }
+
 
     if (containerNode && containerNode.nodes) {
         const order: string[] = [];
@@ -52,12 +77,14 @@ export const reconstructPortfolioData = (nodes: SerializedNodes, originalData: P
                 else if (name === COMPONENT_NAMES.CUSTOM_SECTIONS) order.push("customSections");
             }
         });
+        console.log("Generated Section Order:", order);
         newData.sectionOrder = order;
     }
 
     Object.values(nodes).forEach((node: SerializedNode) => {
         // We identify nodes by their displayName or custom.name which we will set in the wrappers
         const name = node.displayName || (node.type as any).resolvedName;
+        // console.log("Processing Node:", name, node.id);
 
         if (name === COMPONENT_NAMES.HERO) {
             newData.personalInfo = { ...newData.personalInfo, ...node.props.personalInfo };
@@ -123,6 +150,22 @@ export const reconstructPortfolioData = (nodes: SerializedNodes, originalData: P
             // Custom sections visibility logic might be more complex if per-section
         }
     });
+
+    // Consistency Check: If a section is not in sectionOrder (i.e., not in the visual tree), 
+    // ensure its data is cleared. This prevents orphaned nodes from populating data.
+    if (newData.sectionOrder) {
+        const activeSections = new Set(newData.sectionOrder);
+        if (!activeSections.has('experience')) newData.experience = [];
+        if (!activeSections.has('projects')) newData.projects = [];
+        if (!activeSections.has('skills')) newData.skills = [];
+        if (!activeSections.has('education')) newData.education = [];
+        if (!activeSections.has('certifications')) newData.certifications = [];
+        if (!activeSections.has('publications')) newData.publications = [];
+        if (!activeSections.has('extracurricular')) newData.extracurricular = [];
+        if (!activeSections.has('achievements')) newData.achievements = [];
+        if (!activeSections.has('coursework')) newData.coursework = [];
+        if (!activeSections.has('customSections')) newData.customSections = [];
+    }
 
     return newData;
 };
