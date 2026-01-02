@@ -55,7 +55,7 @@ export function LoginForm({ onLogin }: LoginFormProps) {
                         type="text"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
-                        className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                        className="w-full text-black p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                         required
                     />
                 </div>
@@ -65,7 +65,7 @@ export function LoginForm({ onLogin }: LoginFormProps) {
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                        className="w-full text-black p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                         required
                     />
                 </div>
