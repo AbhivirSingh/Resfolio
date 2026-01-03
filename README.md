@@ -39,17 +39,17 @@ graph TD
     CDN --> PublicPage
     CDN --> Dashboard
 
-    PublicPage -->|Fetch (RSC)| DAL
-    PublicPage -->|Render| ThemeEngine
+    PublicPage -->|"Fetch (RSC)"| DAL
+    PublicPage --> Render --> ThemeEngine
 
     Dashboard --> Editor
-    Editor -->|State Change| Reconstructor
-    Reconstructor -->|JSON Payload| API
+    Editor -->|"State Change"| Reconstructor
+    Reconstructor -->|"JSON Payload"| API
 
     API -->|Validate| DAL
-    DAL -->|Mongoose ODM| DB
+    DAL -->|"Mongoose ODM"| DB
     
-    Editor -->|Direct Upload| FileStore
+    Editor -->|"Direct Upload"| FileStore
 ```
 
 ### Core Components
