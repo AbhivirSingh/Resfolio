@@ -101,12 +101,12 @@ async function extractTextFromPDF(buffer: Buffer): Promise<string> {
 }
 
 /**
- * Use Perplexity API (sonar-pro) to parse extracted resume text into structured data
+ * Use Groq API (llama3-70b-8192) to parse extracted resume text into structured data
  */
 async function parseResumeWithAI(fileBuffer: ArrayBuffer, fileName: string): Promise<PortfolioData> {
-    const apiKey = process.env.PERPLEXITY_API_KEY;
+    const apiKey = process.env.GROQ_API_KEY;
     if (!apiKey) {
-        throw new Error("PERPLEXITY_API_KEY is not defined in environment variables");
+        throw new Error("GROQ_API_KEY is not defined in environment variables");
     }
 
     console.log("Extracting text from PDF...");
@@ -222,14 +222,14 @@ async function parseResumeWithAI(fileBuffer: ArrayBuffer, fileName: string): Pro
     `;
 
     try {
-        const response = await fetch("https://api.perplexity.ai/chat/completions", {
+        const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
             method: "POST",
             headers: {
                 "Authorization": `Bearer ${apiKey}`,
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                model: "sonar-pro",
+                model: "openai/gpt-oss-120b",
                 messages: [
                     {
                         role: "system",
@@ -246,7 +246,7 @@ async function parseResumeWithAI(fileBuffer: ArrayBuffer, fileName: string): Pro
 
         if (!response.ok) {
             const errorText = await response.text();
-            throw new Error(`Perplexity API error: ${response.status} - ${errorText} `);
+            throw new Error(`Groq API error: ${response.status} - ${errorText} `);
         }
 
         const data = await response.json();
@@ -259,7 +259,7 @@ async function parseResumeWithAI(fileBuffer: ArrayBuffer, fileName: string): Pro
         return parsedData;
     } catch (error) {
         console.error("AI parsing failed:", error);
-        throw new Error("Failed to parse resume with Perplexity AI");
+        throw new Error("Failed to parse resume with Groq AI");
     }
 }
 
@@ -282,17 +282,17 @@ export async function POST(req: NextRequest) {
 
         // Read the file as ArrayBuffer
         const arrayBuffer = await file.arrayBuffer();
-        console.log("File buffer created, sending to Perplexity for parsing...");
+        console.log("File buffer created, sending to Groq for parsing...");
 
-        // Parse the PDF directly with Perplexity AI
+        // Parse the PDF directly with Groq AI
         let parsedData: PortfolioData;
         try {
             parsedData = await parseResumeWithAI(arrayBuffer, file.name);
-            console.log("Resume parsed successfully by Perplexity");
+            console.log("Resume parsed successfully by Groq");
         } catch (aiError) {
             console.error("AI Parsing failed:", aiError);
             return NextResponse.json({
-                error: "Failed to parse resume with Perplexity AI. Please check your API key and try again."
+                error: "Failed to parse resume with Groq AI. Please check your API key and try again."
             }, { status: 500 });
         }
 
