@@ -1,107 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PortfolioData } from "@/types/portfolio";
-import path from 'path';
-import { pathToFileURL } from 'url';
-// Import from legacy build for Node.js compatibility
-import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf.mjs';
+import { extractText } from "unpdf";
 
 /**
- * Extract text from PDF buffer using pdfjs-dist
- */
-/**
- * Extract text from PDF buffer using pdfjs-dist, including hyperlinks
+ * Extract text from PDF buffer using unpdf
  */
 async function extractTextFromPDF(buffer: Buffer): Promise<string> {
-    // Set worker source to the file in node_modules as a file URL
-    const workerPath = path.join(process.cwd(), 'node_modules/pdfjs-dist/legacy/build/pdf.worker.mjs');
-    pdfjsLib.GlobalWorkerOptions.workerSrc = pathToFileURL(workerPath).toString();
-
-    // Convert Buffer to Uint8Array
     const data = new Uint8Array(buffer);
-
-    // Load the PDF document
-    const loadingTask = pdfjsLib.getDocument({
-        data,
-        disableFontFace: true,
-        verbosity: 0
-    });
-
-    try {
-        const pdfDocument = await loadingTask.promise;
-        const numPages = pdfDocument.numPages;
-        let fullText = "";
-
-        // Iterate through all pages
-        for (let i = 1; i <= numPages; i++) {
-            const page = await pdfDocument.getPage(i);
-            const textContent = await page.getTextContent();
-            const annotations = await page.getAnnotations();
-
-            // Create a map of links by their rect coordinates (simplified)
-            // We'll just look for links and append them to the text for now
-            // A more robust solution would map coordinates, but for LLM parsing, 
-            // just having the links present in the text is often enough.
-
-            let pageText = "";
-
-            // Process text items
-            for (const item of textContent.items as any[]) {
-                let text = item.str;
-
-                // Check if this text item overlaps with any link annotation
-                // This is a basic check. 
-                // item.transform is [scaleX, skewY, skewX, scaleY, x, y]
-                // We can try to match links to text, or just dump links at the end of the page.
-                // For simplicity and robustness with LLMs, we'll append links found on the page 
-                // to the end of the page text, or try to insert them if we can match coordinates.
-
-                // Let's try to find if this text is a link label
-                const itemX = item.transform[4];
-                const itemY = item.transform[5];
-                const itemWidth = item.width;
-                const itemHeight = item.height;
-
-                // Check for overlapping link annotations
-                const associatedLink = annotations.find((ann: any) => {
-                    if (ann.subtype === 'Link' && ann.url) {
-                        const [x1, y1, x2, y2] = ann.rect; // PDF coordinates (bottom-left origin usually)
-                        // Simple bounding box overlap check
-                        // Note: PDF coordinates can be tricky. 
-                        // Let's just check if the text point is within the rect
-                        return (itemX >= x1 && itemX <= x2 && itemY >= y1 && itemY <= y2);
-                    }
-                    return false;
-                });
-
-                if (associatedLink && (associatedLink as any).url) {
-                    text += ` [Link: ${(associatedLink as any).url}]`;
-                }
-
-                pageText += text + " ";
-            }
-
-            // Also append any links that might have been missed (e.g. pure hotspots without text)
-            // or just to be safe, list all links found on the page at the bottom
-            const linksOnPage = annotations
-                .filter((ann: any) => ann.subtype === 'Link' && ann.url)
-                .map((ann: any) => ann.url);
-
-            if (linksOnPage.length > 0) {
-                pageText += "\n\n[Links found on this page: " + linksOnPage.join(", ") + "]";
-            }
-
-            fullText += pageText + "\n\n";
-        }
-
-        return fullText;
-    } catch (error) {
-        console.error("PDF.js extraction error:", error);
-        throw error;
-    }
+    const { text } = await extractText(data);
+    return text.join("\n");
 }
 
 /**
- * Use Groq API (llama3-70b-8192) to parse extracted resume text into structured data
+ * Use Perplexity API (sonar-pro) to parse extracted resume text into structured data
  */
 async function parseResumeWithAI(fileBuffer: ArrayBuffer, fileName: string): Promise<PortfolioData> {
     const apiKey = process.env.GROQ_API_KEY;
@@ -230,6 +141,7 @@ async function parseResumeWithAI(fileBuffer: ArrayBuffer, fileName: string): Pro
             },
             body: JSON.stringify({
                 model: "openai/gpt-oss-120b",
+                response_format: { type: "json_object" },
                 messages: [
                     {
                         role: "system",
@@ -282,7 +194,7 @@ export async function POST(req: NextRequest) {
 
         // Read the file as ArrayBuffer
         const arrayBuffer = await file.arrayBuffer();
-        console.log("File buffer created, sending to Groq for parsing...");
+        console.log("File buffer created, sending to Perplexity for parsing...");
 
         // Parse the PDF directly with Groq AI
         let parsedData: PortfolioData;
