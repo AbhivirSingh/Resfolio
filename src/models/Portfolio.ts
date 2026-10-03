@@ -112,7 +112,8 @@ const PortfolioSchema: Schema = new Schema({
     },
     sectionVisibility: { type: Map, of: Boolean },
     sectionOrder: [String],
-    theme: { type: String, default: "modern" },
+    theme: { type: String, default: "macos" },
+    gallery: [{ id: Schema.Types.Mixed, img: String, title: String }],
 }, { timestamps: true });
 
 // Prevent model recompilation error in development

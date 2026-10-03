@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
 
-type Theme = "minimalist" | "creative" | "professional" | "modern";
+type Theme = "macos" | "modern";
 
 interface ThemeContextType {
     theme: Theme;

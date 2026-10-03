@@ -106,7 +106,8 @@ export interface PortfolioData {
         [key: string]: boolean;
     };
     sectionOrder?: string[];
-    theme?: "minimalist" | "creative" | "professional" | "modern";
+    theme?: "macos" | "modern";
+    gallery?: { id: number | string; img: string; title?: string }[];
 }
 
 export interface SkillsSectionProps {

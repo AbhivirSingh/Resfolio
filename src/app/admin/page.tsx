@@ -2,15 +2,17 @@
 
 import { useState, ChangeEvent, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Upload, FileText, CheckCircle, AlertCircle, Eye, Save } from "lucide-react";
+import { Upload, FileText, CheckCircle, AlertCircle, Eye, Images } from "lucide-react";
 import { ThemeSwitcher } from "@/features/portfolio/components/theme-switcher";
 import { PortfolioData } from "@/types/portfolio";
 import { ResumeReview } from "@/features/admin/components/resume-review/resume-review-container";
 import { LoginForm } from "@/features/auth/components/login-form";
 import { mergePortfolioData } from "@/features/admin/utils/merge";
 import { EditButton } from "@/features/admin/components/edit-button";
+import { MediaManager } from "@/features/admin/components/upload/media-manager";
 
 type Step = "upload" | "review" | "success";
+type AdminTab = "resume" | "media";
 
 interface SectionSelection {
     personalInfo: boolean;
@@ -22,6 +24,7 @@ interface SectionSelection {
 export default function AdminPage() {
     const router = useRouter();
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [activeTab, setActiveTab] = useState<AdminTab>("resume");
     const [step, setStep] = useState<Step>("upload");
     const [file, setFile] = useState<File | null>(null);
     const [status, setStatus] = useState<"idle" | "uploading" | "reviewing" | "saving" | "success" | "error">("idle");
@@ -98,23 +101,12 @@ export default function AdminPage() {
         }
     };
 
-    const toggleSection = (section: keyof SectionSelection) => {
-        setSectionSelection(prev => ({
-            ...prev,
-            [section]: !prev[section]
-        }));
-    };
-
     const handleFinalSubmit = async (dataToSubmit?: PortfolioData) => {
         const data = dataToSubmit || parsedData;
         if (!data) return;
 
         setStatus("saving");
 
-        // Filter data based on selections
-        // Data is already filtered by ResumeReview if passed, or we use it as is
-        // If we are using the old selection logic (which we are replacing), we would filter here.
-        // But since ResumeReview returns the final filtered data, we can just use 'data'.
         const filteredData = data;
 
         try {
@@ -146,8 +138,8 @@ export default function AdminPage() {
     const renderUploadStep = () => (
         <div className="bg-white max-w-md w-full rounded-2xl shadow-xl p-8 space-y-8">
             <div className="text-center">
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">Admin Panel</h1>
-                <p className="text-gray-500">Upload your resume to automatically update your portfolio.</p>
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">Resume Parser</h1>
+                <p className="text-gray-500">Upload your resume to automatically parse and update your portfolio data.</p>
             </div>
 
             <div className="relative border-2 border-dashed border-gray-300 rounded-xl p-8 flex flex-col items-center justify-center space-y-4 hover:border-blue-500 transition-colors bg-gray-50/50">
@@ -203,11 +195,7 @@ export default function AdminPage() {
             <ResumeReview
                 initialData={parsedData}
                 onSave={(finalData) => {
-                    // Update the parsed data with the edited/filtered version
                     setParsedData(finalData);
-                    // Trigger the final submit logic immediately with this new data
-                    // We need to slightly modify handleFinalSubmit to accept data or use state
-                    // For now, let's update state and call a modified submit
                     handleFinalSubmit(finalData);
                 }}
                 onCancel={() => {
@@ -241,14 +229,58 @@ export default function AdminPage() {
     }
 
     return (
-        <>
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-                {step === "upload" && renderUploadStep()}
-                {step === "review" && renderReviewStep()}
-                {step === "success" && renderSuccessStep()}
+        <div className="min-h-screen bg-gray-100/70 p-4 md:p-8 flex flex-col items-center">
+            {/* Top Navigation Tabs */}
+            <div className="w-full max-w-4xl mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <h1 className="text-2xl font-black tracking-tight text-gray-900">Admin Control Center</h1>
+                    <p className="text-xs text-gray-500 font-medium">Manage portfolio resume parsing, media assets, and themes</p>
+                </div>
+
+                <div className="p-1 bg-white border border-gray-200 rounded-2xl shadow-xs flex items-center gap-1">
+                    <button
+                        type="button"
+                        onClick={() => setActiveTab("resume")}
+                        className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
+                            activeTab === "resume"
+                                ? "bg-black text-white shadow-xs"
+                                : "text-gray-600 hover:text-black"
+                        }`}
+                    >
+                        <FileText size={15} />
+                        <span>Resume & Content</span>
+                    </button>
+
+                    <button
+                        type="button"
+                        onClick={() => setActiveTab("media")}
+                        className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
+                            activeTab === "media"
+                                ? "bg-black text-white shadow-xs"
+                                : "text-gray-600 hover:text-black"
+                        }`}
+                    >
+                        <Images size={15} />
+                        <span>Media & Gallery (UploadThing)</span>
+                    </button>
+                </div>
             </div>
+
+            {/* Tab Content */}
+            <div className="w-full flex justify-center">
+                {activeTab === "resume" ? (
+                    <div className="w-full flex justify-center py-4">
+                        {step === "upload" && renderUploadStep()}
+                        {step === "review" && renderReviewStep()}
+                        {step === "success" && renderSuccessStep()}
+                    </div>
+                ) : (
+                    <MediaManager currentData={currentData} />
+                )}
+            </div>
+
             {currentData && <EditButton portfolioId={(currentData as any)._id || "default"} />}
             <ThemeSwitcher />
-        </>
+        </div>
     );
 }

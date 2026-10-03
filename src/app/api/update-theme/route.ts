@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
     try {
         const { theme } = await req.json();
 
-        if (!theme || !["minimalist", "creative", "professional", "modern"].includes(theme)) {
+        if (!theme || !["macos", "modern"].includes(theme)) {
             return NextResponse.json({ error: "Invalid theme" }, { status: 400 });
         }
 

@@ -1,11 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Georama:ital,wght@0,100..900;1,100..900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap');
 @import "tailwindcss";
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
 }
-
 
 @theme inline {
   --color-background: var(--background);
@@ -15,6 +15,8 @@
 
   /* Custom Theme Config */
   --font-outfit: 'Outfit', sans-serif;
+  --font-georama: 'Georama', sans-serif;
+  --font-roboto: 'Roboto Mono', monospace;
 
   --color-neon-blue: #00f3ff;
   --color-neon-purple: #bc13fe;
@@ -24,25 +26,21 @@
   --animate-pulse-glow: pulse-glow 3s infinite;
 
   @keyframes float {
-
     0%,
     100% {
       transform: translateY(0);
     }
-
     50% {
       transform: translateY(-20px);
     }
   }
 
   @keyframes pulse-glow {
-
     0%,
     100% {
       opacity: 1;
       filter: brightness(100%);
     }
-
     50% {
       opacity: 0.8;
       filter: brightness(150%);
@@ -61,4 +59,284 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* =========================================================================
+   macOS Theme Styles
+   ========================================================================= */
+
+.macos-root {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background-image: url('/images/wallpaper.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+}
+
+.macos-root *,
+.macos-root *::before,
+.macos-root *::after {
+  cursor: default;
+}
+
+.macos-root .font-georama,
+.font-georama {
+  font-family: 'Georama', sans-serif !important;
+  font-optical-sizing: auto;
+}
+
+.macos-root .font-roboto,
+.font-roboto {
+  font-family: 'Roboto Mono', monospace !important;
+}
+
+/* Dock */
+.macos-root #dock .dock-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.7);
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.macos-root #dock .dock-separator {
+  width: 1px;
+  height: 40px;
+  background-color: rgba(255, 255, 255, 0.3);
+  margin: 0 4px;
+  align-self: center;
+  flex-shrink: 0;
+}
+
+.macos-root #dock .dock-minimized-thumb {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Window Controls */
+.macos-root #window-controls,
+#window-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.macos-root #window-controls .close,
+.macos-root #window-controls .minimize,
+.macos-root #window-controls .maximize,
+#window-controls .close,
+#window-controls .minimize,
+#window-controls .maximize {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  cursor: default;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.macos-root #window-controls .close,
+#window-controls .close {
+  background-color: #ff6157;
+}
+
+.macos-root #window-controls .minimize,
+#window-controls .minimize {
+  background-color: #ffc030;
+}
+
+.macos-root #window-controls .minimize.is-maximized,
+#window-controls .minimize.is-maximized {
+  background-color: #c0c0c0;
+}
+
+.macos-root #window-controls .minimize.is-maximized .control-icon,
+#window-controls .minimize.is-maximized .control-icon {
+  display: none !important;
+}
+
+.macos-root #window-controls .maximize,
+#window-controls .maximize {
+  background-color: #2acb42;
+}
+
+.macos-root #window-controls .control-icon,
+#window-controls .control-icon {
+  opacity: 0;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.1s ease;
+}
+
+.macos-root #window-controls:hover .control-icon,
+.macos-root #window-controls.group\/controls:hover .control-icon,
+#window-controls:hover .control-icon,
+#window-controls.group\/controls:hover .control-icon,
+.group\/controls:hover .control-icon {
+  opacity: 1;
+}
+
+.macos-root #window-controls .control-icon svg,
+#window-controls .control-icon svg {
+  width: 7px !important;
+  height: 7px !important;
+  color: rgba(0, 0, 0, 0.55);
+}
+
+/* Windows Default Sizing & Shadows */
+.macos-root #safari {
+  width: 896px;
+  max-width: 90vw;
+  position: absolute;
+  top: 10rem;
+  left: 16.666667%;
+  background-color: #ffffff;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+.macos-root #terminal {
+  position: absolute;
+  top: 8rem;
+  left: 8.333333%;
+  background-color: #ffffff;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  max-width: 90vw;
+  width: 540px;
+}
+
+.macos-root #contact {
+  width: 420px;
+  max-width: 90vw;
+  position: absolute;
+  top: 15rem;
+  left: 41.666667%;
+  background-color: #ffffff;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+.macos-root #photos {
+  max-width: 56rem;
+  width: 52rem;
+  height: 34rem;
+  max-height: 82vh;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #ffffff;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+.macos-root #resume {
+  width: fit-content;
+  height: fit-content;
+  position: absolute;
+  top: 4rem;
+  left: 58.333333%;
+  background-color: #ffffff;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+.macos-root #finder {
+  position: absolute;
+  width: 48rem;
+  max-width: 90vw;
+  left: 10rem;
+  top: 5rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+  border-radius: 0.75rem;
+  background-color: #ffffff;
+}
+
+.macos-root #txtfile {
+  width: 28rem;
+  max-width: 90vw;
+  position: absolute;
+  top: 9rem;
+  right: 8rem;
+  background-color: #ffffff;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+.macos-root #imgfile {
+  width: fit-content;
+  max-width: 85vw;
+  height: fit-content;
+  max-height: 85vh;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #ffffff;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.45);
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+/* macOS Smooth Scrollbars */
+.macos-root ::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.macos-root ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.macos-root ::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.22);
+  border-radius: 9999px;
+}
+
+.macos-root ::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.45);
+}
+
+/* =========================================================================
+   iOS Theme Styles & Mobile Optimizations
+   ========================================================================= */
+
+.ios-root {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: manipulation;
+  overscroll-behavior: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

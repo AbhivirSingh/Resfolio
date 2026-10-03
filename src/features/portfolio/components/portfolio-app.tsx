@@ -1,9 +1,7 @@
 "use client";
 
-import { useTheme, ThemeProvider } from "@/context/ThemeContext";
-import { MinimalistTheme } from "@/features/portfolio/components/themes/minimalist/minimalist-theme";
-import { CreativeTheme } from "@/features/portfolio/components/themes/creative/creative-theme";
-import { ProfessionalTheme } from "@/features/portfolio/components/themes/professional/professional-theme";
+import { useTheme } from "@/context/ThemeContext";
+import { MacOSTheme } from "@/features/portfolio/components/themes/macos/macos-theme";
 import { ModernTheme } from "@/features/portfolio/components/themes/modern/modern-theme";
 import { PortfolioData } from "@/types/portfolio";
 
@@ -16,9 +14,7 @@ function PortfolioContent({ data }: { data: PortfolioData }) {
 
     return (
         <>
-            {theme === "minimalist" && <MinimalistTheme data={data} />}
-            {theme === "creative" && <CreativeTheme data={data} />}
-            {theme === "professional" && <ProfessionalTheme data={data} />}
+            {(!theme || theme === "macos") && <MacOSTheme data={data} />}
             {theme === "modern" && <ModernTheme data={data} />}
         </>
     );

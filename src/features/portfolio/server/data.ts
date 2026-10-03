@@ -37,7 +37,7 @@ const defaultPortfolioData: PortfolioData = {
         "extracurricular",
         "customSections"
     ],
-    theme: "modern"
+    theme: "macos"
 };
 
 export async function getPortfolioData(): Promise<PortfolioData> {
