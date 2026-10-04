@@ -47,33 +47,43 @@ const Finder: React.FC<FinderProps> = ({ locationsMap }) => {
 
     const favorites = locationsMap ? Object.values(locationsMap) : [];
     const myProjects = locationsMap?.work?.children || [];
+    const currentActive = activeLocation || favorites[0];
 
     return (
         <div className="flex flex-col h-full bg-white overflow-hidden">
             <div id="window-header" className="flex items-center justify-between px-4 py-3 rounded-t-lg bg-gray-50 border-b border-gray-200 select-none text-sm text-gray-400 flex-shrink-0">
                 <WindowControls target="finder" />
+                <div className="flex items-center gap-2">
+                    <span className="text-xs font-semibold text-gray-700">{currentActive?.name || "Finder"}</span>
+                </div>
                 <Search className="icon p-1 hover:bg-gray-200 rounded cursor-default w-5 h-5 text-gray-500" />
             </div>
             <div className="bg-white flex flex-1 overflow-hidden min-h-0">
                 <div className="sidebar w-48 flex-shrink-0 bg-gray-50 border-r border-gray-200 flex flex-col p-5 space-y-3 overflow-y-auto">
                     {renderList("Favorites", favorites)}
-                    {myProjects.length > 0 && renderList("My Projects", myProjects)}
+                    {myProjects.length > 0 && renderList("Projects", myProjects)}
                 </div>
                 <ul className="content flex-1 p-8 bg-white relative overflow-auto min-h-0">
-                    {activeLocation?.children?.map((item) => (
-                        <li
-                            className={clsx("absolute flex items-center flex-col gap-3 cursor-default group", item.position || "relative")}
-                            onClick={() => openItem(item)}
-                            key={item.id}
-                        >
-                            <img
-                                src={item.icon}
-                                alt={item.name}
-                                className="object-contain object-center size-16 relative group-hover:scale-105 transition-transform"
-                            />
-                            <p className="text-sm text-center font-medium w-40 truncate text-gray-800">{item.name}</p>
-                        </li>
-                    ))}
+                    {currentActive?.children && currentActive.children.length > 0 ? (
+                        currentActive.children.map((item) => (
+                            <li
+                                className={clsx("absolute flex items-center flex-col gap-3 cursor-default group", item.position || "relative")}
+                                onClick={() => openItem(item)}
+                                key={item.id}
+                            >
+                                <img
+                                    src={item.icon}
+                                    alt={item.name}
+                                    className="object-contain object-center size-16 relative group-hover:scale-105 transition-transform"
+                                />
+                                <p className="text-sm text-center font-medium w-40 truncate text-gray-800">{item.name}</p>
+                            </li>
+                        ))
+                    ) : (
+                        <div className="h-full flex items-center justify-center text-gray-400 text-sm">
+                            Empty folder
+                        </div>
+                    )}
                 </ul>
             </div>
         </div>

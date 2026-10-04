@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import { AdaptedMacData } from "../../constants/adapter";
 import { useIOSStore } from "../store/useIOSStore";
 import { IOSAppId } from "../types";
@@ -28,75 +28,127 @@ interface AppIconConfig {
 export const IOSHomeScreen: React.FC<IOSHomeScreenProps> = ({ data }) => {
     const { openApp } = useIOSStore();
 
-    const appIcons: AppIconConfig[] = [
-        {
-            id: "projects",
-            name: "Projects",
-            icon: "/images/folder.png",
-            badge: data.projects?.length || 5,
-        },
-        {
-            id: "skills",
-            name: "Skills",
-            icon: "/images/terminal.png",
-            badge: "AI/ML",
-        },
-        {
-            id: "safari",
-            name: "Articles",
-            icon: "/images/safari.png",
-            badge: data.blogPosts?.length || 3,
-        },
-        {
-            id: "photos",
-            name: "Gallery",
-            icon: "/images/photos.png",
-            badge: 4,
-        },
-        {
+    // Dynamically build active home screen icons based on available sections
+    const appIcons = useMemo<AppIconConfig[]>(() => {
+        const icons: AppIconConfig[] = [];
+
+        if (data.hasProjects) {
+            icons.push({
+                id: "projects",
+                name: "Projects",
+                icon: "/images/folder.png",
+                badge: data.projects?.length || undefined,
+            });
+        }
+
+        if (data.hasSkills || data.hasCoursework) {
+            icons.push({
+                id: "skills",
+                name: "Skills",
+                icon: "/images/terminal.png",
+                badge: data.techStack?.length || undefined,
+            });
+        }
+
+        if (data.hasArticles) {
+            icons.push({
+                id: "safari",
+                name: "Articles",
+                icon: "/images/safari.png",
+                badge: data.blogPosts?.length || undefined,
+            });
+        }
+
+        if (data.hasGallery) {
+            icons.push({
+                id: "photos",
+                name: "Gallery",
+                icon: "/images/photos.png",
+                badge: data.gallery?.length || undefined,
+            });
+        }
+
+        icons.push({
             id: "about",
             name: "About Me",
             icon: "/icons/info.svg",
-        },
-        {
-            id: "resume",
-            name: "Resume",
-            icon: "/images/pdf.png",
-        },
-        {
-            id: "contact",
-            name: "Contact",
-            icon: "/images/contact.png",
-        },
-        {
+        });
+
+        if (data.hasResume) {
+            icons.push({
+                id: "resume",
+                name: "Resume",
+                icon: "/images/pdf.png",
+            });
+        }
+
+        if (data.hasContact) {
+            icons.push({
+                id: "contact",
+                name: "Contact",
+                icon: "/images/contact.png",
+            });
+        }
+
+        icons.push({
             id: "trash",
             name: "Bin",
             icon: "/images/trash.png",
-        },
-    ];
+        });
 
-    const dockApps: AppIconConfig[] = [
-        {
-            id: "contact",
-            name: "Phone",
-            icon: "/images/contact.png",
-        },
-        {
-            id: "safari",
-            name: "Safari",
-            icon: "/images/safari.png",
-        },
-        {
-            id: "projects",
-            name: "Files",
-            icon: "/images/folder.png",
-        },
-        {
-            id: "resume",
-            name: "Resume",
-            icon: "/images/pdf.png",
-        },
-    ];
+        return icons;
+    }, [data]);
+
+    // Dynamically build bottom dock apps based on active sections
+    const dockApps = useMemo<AppIconConfig[]>(() => {
+        const dockList: AppIconConfig[] = [];
+
+        if (data.hasContact) {
+            dockList.push({
+                id: "contact",
+                name: "Phone",
+                icon: "/images/contact.png",
+            });
+        }
+
+        if (data.hasArticles) {
+            dockList.push({
+                id: "safari",
+                name: "Safari",
+                icon: "/images/safari.png",
+            });
+        }
+
+        if (data.hasProjects) {
+            dockList.push({
+                id: "projects",
+                name: "Files",
+                icon: "/images/folder.png",
+            });
+        }
+
+        if (data.hasResume) {
+            dockList.push({
+                id: "resume",
+                name: "Resume",
+                icon: "/images/pdf.png",
+            });
+        } else if (data.hasSkills) {
+            dockList.push({
+                id: "skills",
+                name: "Skills",
+                icon: "/images/terminal.png",
+            });
+        } else if (data.hasGallery) {
+            dockList.push({
+                id: "photos",
+                name: "Gallery",
+                icon: "/images/photos.png",
+            });
+        }
+
+        return dockList.slice(0, 4);
+    }, [data]);
 
     const featuredProject = data.projects?.[0];
 
@@ -132,13 +184,17 @@ export const IOSHomeScreen: React.FC<IOSHomeScreenProps> = ({ data }) => {
                             <p className="text-xs text-white/80 line-clamp-1 font-medium mt-0.5">
                                 {data.title}
                             </p>
-                            <div className="flex items-center gap-1.5 mt-2">
-                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/20 backdrop-blur-md text-[10px] font-medium text-white">
-                                    <GraduationCap size={10} /> RGIPT '26
-                                </span>
-                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/30 text-emerald-300 text-[10px] font-medium">
-                                    BTech + MTech
-                                </span>
+                            <div className="flex items-center gap-1.5 mt-2 flex-wrap">
+                                {data.hasEducation && data.education[0] && (
+                                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/20 backdrop-blur-md text-[10px] font-medium text-white truncate max-w-[180px]">
+                                        <GraduationCap size={10} /> {data.education[0].institute}
+                                    </span>
+                                )}
+                                {data.hasSkills && (
+                                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/30 text-emerald-300 text-[10px] font-medium">
+                                        {data.techStack.length} Skill Categories
+                                    </span>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -211,23 +267,25 @@ export const IOSHomeScreen: React.FC<IOSHomeScreenProps> = ({ data }) => {
             </div>
 
             {/* FROSTED GLASS DOCK */}
-            <div className="p-2.5 rounded-[34px] bg-white/25 dark:bg-black/40 backdrop-blur-2xl border border-white/20 shadow-2xl flex items-center justify-around my-1">
-                {dockApps.map((app) => (
-                    <div
-                        key={`dock-${app.id}`}
-                        onClick={() => openApp(app.id)}
-                        className="flex flex-col items-center cursor-pointer active:scale-90 transition-transform group"
-                    >
-                        <div className="w-14 h-14 rounded-[22%] bg-white/90 dark:bg-zinc-900 shadow-md flex items-center justify-center overflow-hidden border border-white/30">
-                            <img
-                                src={app.icon}
-                                alt={app.name}
-                                className="w-full h-full object-cover p-1.5"
-                            />
+            {dockApps.length > 0 && (
+                <div className="p-2.5 rounded-[34px] bg-white/25 dark:bg-black/40 backdrop-blur-2xl border border-white/20 shadow-2xl flex items-center justify-around my-1">
+                    {dockApps.map((app) => (
+                        <div
+                            key={`dock-${app.id}`}
+                            onClick={() => openApp(app.id)}
+                            className="flex flex-col items-center cursor-pointer active:scale-90 transition-transform group"
+                        >
+                            <div className="w-14 h-14 rounded-[22%] bg-white/90 dark:bg-zinc-900 shadow-md flex items-center justify-center overflow-hidden border border-white/30">
+                                <img
+                                    src={app.icon}
+                                    alt={app.name}
+                                    className="w-full h-full object-cover p-1.5"
+                                />
+                            </div>
                         </div>
-                    </div>
-                ))}
-            </div>
+                    ))}
+                </div>
+            )}
 
             {/* HOME INDICATOR */}
             <div className="pt-2 pb-1 flex justify-center">

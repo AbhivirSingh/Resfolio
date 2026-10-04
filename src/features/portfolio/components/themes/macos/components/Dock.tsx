@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef, useEffect } from "react";
-import { dockApps, locations } from "../constants";
+import { dockApps as defaultDockApps, locations } from "../constants";
 import { Tooltip } from "react-tooltip";
 import gsap from "gsap";
 import useWindowStore from "../store/window";
@@ -31,7 +31,11 @@ const windowToName: Record<string, string> = {
     trash: "Bin",
 };
 
-export const Dock: React.FC = () => {
+interface DockProps {
+    dockApps?: { id: string; name: string; icon: string; canOpen: boolean }[];
+}
+
+export const Dock: React.FC<DockProps> = ({ dockApps = defaultDockApps }) => {
     const { openWindow, closeWindow, restoreWindow, windows } = useWindowStore();
     const { setActiveLocation } = useLocationStore();
     const dockRef = useRef<HTMLDivElement>(null);

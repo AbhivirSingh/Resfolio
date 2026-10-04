@@ -15,8 +15,9 @@ export function MacOSTheme({ data }: { data: PortfolioData }) {
     const isMobile = useIsMobile(768);
 
     useEffect(() => {
-        if (adapted.locations.work) {
-            resetLocation(adapted.locations.work);
+        const firstLocation = adapted.locations.work || Object.values(adapted.locations)[0];
+        if (firstLocation) {
+            resetLocation(firstLocation);
         }
     }, [adapted, resetLocation]);
 
@@ -27,10 +28,10 @@ export function MacOSTheme({ data }: { data: PortfolioData }) {
     return (
         <div className="macos-root w-screen h-screen overflow-hidden fixed inset-0 select-none bg-[url('/images/wallpaper.png')] bg-cover bg-no-repeat bg-center">
             <main className="w-full h-full relative overflow-hidden">
-                <Navbar name={adapted.name} />
+                <Navbar name={adapted.name} navLinks={adapted.navLinks} />
                 <Welcome name={adapted.name} />
-                <Home projects={adapted.projects} />
-                <Terminal techStack={adapted.techStack} username={adapted.name} />
+                <Home projects={adapted.desktopFolders} />
+                <Terminal techStack={adapted.techStack} coursework={adapted.coursework} username={adapted.name} />
                 <Safari blogPosts={adapted.blogPosts} />
                 <Resume resumeUrl={adapted.resumeUrl} />
                 <Finder locationsMap={adapted.locations} />
@@ -38,11 +39,10 @@ export function MacOSTheme({ data }: { data: PortfolioData }) {
                 <Text />
                 <Image />
                 <Contact name={adapted.name} image={adapted.image} bio={adapted.bio} socials={adapted.socials} />
-                <Dock />
+                <Dock dockApps={adapted.dockApps} />
             </main>
         </div>
     );
 }
 
 export default MacOSTheme;
-
